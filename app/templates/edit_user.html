@@ -1,24 +1,93 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Benutzer bearbeiten</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzer bearbeiten | Studenten-Wohnungsportal</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h2>Benutzer bearbeiten</h2>
-    <form method="post">
-        <label>Username:</label><br>
-        <input type="text" name="username" value="{{ user.username }}"><br>
-        <label>Email:</label><br>
-        <input type="email" name="email" value="{{ user.email }}"><br>
-        <label>Rolle:</label><br>
-        <select name="role">
-            <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
-            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
-        </select><br><br>
-        <button type="submit">Änderungen speichern</button>
-    </form>
-    <br>
-    <a href="/admin">Zurück zur Übersicht</a>
+    <nav>
+        <div class="container">
+            <a href="/" class="nav-logo">Studenten-Wohnungsportal</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/admin">Admin-Bereich</a>
+                <a href="/logout">Ausloggen</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-container">
+        <div class="edit-user-container">
+            <div class="admin-header">
+                <h2 class="admin-title">Benutzer bearbeiten</h2>
+            </div>
+
+            <div class="card">
+                <div class="avatar-upload">
+                    <img src="https://via.placeholder.com/100" alt="Benutzer-Avatar" class="user-avatar">
+                    <!-- Optional: File-Upload für Avatar -->
+                    <!-- <input type="file" id="avatar" name="avatar" accept="image/*"> -->
+                </div>
+
+                <form method="post">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" value="{{ user.username }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" value="{{ user.email }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="role">Rolle:</label>
+                        <select id="role" name="role">
+                            <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                            <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-between align-center gap-1">
+                        <button type="submit" class="btn btn-success">Änderungen speichern</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmDelete()">Benutzer löschen</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Studenten-Wohnungsportal</h3>
+                    <p>Die einfachste Art, eine Studentenwohnung zu finden.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/admin">Admin-Bereich</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Studenten-Wohnungsportal. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function confirmDelete() {
+            if (confirm("Möchtest du diesen Benutzer wirklich löschen?")) {
+                // Hier könnte der Delete-Request an den Server gesendet werden
+                window.location.href = "/admin/delete/{{ user.id }}";
+            }
+        }
+    </script>
 </body>
 </html>
 

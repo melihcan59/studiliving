@@ -1,30 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Admin - Nutzerübersicht</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Nutzerübersicht | Studenten-Wohnungsportal</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h2>Registrierte Nutzer</h2>
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>ID</th>
-            <th>Benutzername</th>
-            <th>Email</th>
-        </tr>
-        <th>Aktionen</th>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>
-                <a href="/edit/{{ user.id }}">Bearbeiten</a> |
-                <a href="/delete/{{ user.id }}" onclick="return confirm('Wirklich löschen?')">Löschen</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-    <br>
-    <a href="/">Zurück zum Login</a>
+    <nav>
+        <div class="container">
+            <a href="/" class="nav-logo">Studenten-Wohnungsportal</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/admin">Admin-Bereich</a>
+                <a href="/logout">Ausloggen</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="admin-container">
+            <div class="admin-header">
+                <h2 class="admin-title">Registrierte Nutzer</h2>
+                <div class="action-buttons">
+                    <a href="/new_user" class="btn btn-success btn-small">+ Neuer Nutzer</a>
+                    <a href="/" class="btn btn-secondary btn-small">Zurück zur Startseite</a>
+                </div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Nutzer suchen...">
+                <button class="btn btn-secondary btn-small" onclick="searchTable()">Suchen</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Benutzername</th>
+                        <th>Email</th>
+                        <th>Rolle</th>
+                        <th>Aktionen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.role }}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <a href="/edit/{{ user.id }}" class="btn btn-primary btn-small">Bearbeiten</a>
+                                <a href="/delete/{{ user.id }}" class="btn btn-danger btn-small" onclick="return confirm('Möchtest du diesen Nutzer wirklich löschen?')">Löschen</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Studenten-Wohnungsportal</h3>
+                    <p>Die einfachste Art, eine Studentenwohnung zu finden.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/admin">Admin-Bereich</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Studenten-Wohnungsportal. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function searchTable() {
+            const input = document.getElementById('searchInput');
+            const filter = input.value.toUpperCase();
+            const table = document.querySelector('table');
+            const rows = table.getElementsByTagName('tr');
+
+            for (let i = 1; i < rows.length; i++) {
+                let found = false;
+                const cells = rows[i].getElementsByTagName('td');
+
+                for (let j = 0; j < cells.length; j++) {
+                    const cell = cells[j];
+                    if (cell) {
+                        const textValue = cell.textContent || cell.innerText;
+                        if (textValue.toUpperCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+
+                rows[i].style.display = found ? '' : 'none';
+            }
+        }
+    </script>
 </body>
 </html>

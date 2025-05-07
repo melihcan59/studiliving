@@ -1,16 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Home</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Studenten-Wohnungsportal</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <h2>Willkommen auf der Startseite!</h2>
-    <p>Du bist eingeloggt 🎉</p>
+    <nav>
+        <div class="container">
+            <a href="/" class="nav-logo">Studenten-Wohnungsportal</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                {% if user.role == 'admin' %}
+                    <a href="/admin">Admin-Bereich</a>
+                {% endif %}
+                <a href="/logout">Ausloggen</a>
+            </div>
+        </div>
+    </nav>
 
-    {% if user.role == 'admin' %}
-        <p><a href="/admin">Zur Admin-Seite</a></p>
-    {% endif %}
+    <div class="page-container">
+        <div class="card">
+            <h2 class="card-title">Willkommen, {{ user.username }}!</h2>
 
-    <a href="/">Zurück zum Login</a>
+            <div class="alert alert-success">
+                <p>Du bist erfolgreich eingeloggt 🎉</p>
+            </div>
+
+
+            <div class="mt-2">
+                <h3>Verfügbare Wohnungen</h3>
+                <p>Hier findest du bald alle verfügbaren Studentenwohnungen.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Studenten-Wohnungsportal</h3>
+                    <p>Die einfachste Art, eine Studentenwohnung zu finden.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Links</h3>
+                    <ul>
+                        <li><a href="/">Home</a></li>
+                        <li><a href="#">Wohnungen</a></li>
+                        <li><a href="#">Über uns</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Kontakt</h3>
+                    <p>E-Mail: info@student-housing.de</p>
+                    <p>Telefon: 0123 456789</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Studenten-Wohnungsportal. Alle Rechte vorbehalten.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
