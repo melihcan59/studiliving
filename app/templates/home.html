@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home</title>
+</head>
+<body>
+    <h2>Willkommen auf der Startseite!</h2>
+    <p>Du bist eingeloggt 🎉</p>
+
+    {% if user.role == 'admin' %}
+        <p><a href="/admin">Zur Admin-Seite</a></p>
+    {% endif %}
+
+    <a href="/">Zurück zum Login</a>
+</body>
+</html>

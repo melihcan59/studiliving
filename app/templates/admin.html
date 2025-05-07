@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin - Nutzerübersicht</title>
+</head>
+<body>
+    <h2>Registrierte Nutzer</h2>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th>
+            <th>Benutzername</th>
+            <th>Email</th>
+        </tr>
+        <th>Aktionen</th>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <a href="/edit/{{ user.id }}">Bearbeiten</a> |
+                <a href="/delete/{{ user.id }}" onclick="return confirm('Wirklich löschen?')">Löschen</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="/">Zurück zum Login</a>
+</body>
+</html>
