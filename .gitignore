@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+*.db
+.env
+*.log
+
+# Virtual Environments
+.venv/
+env/
+venv/
+
+# VSCode / PyCharm
+.vscode/
+.idea/
+
+# MacOS
+.DS_Store
+
+# Byte-compiled
+*.pyo
+*.pyd
+
+# CSS ausschließen
+static/style.css
