@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Impressum & Datenschutz – ImmoManager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .content {
+      max-width: 800px;
+      margin: 40px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">ImmoManager</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav" id="nav-links">
+        <!-- Dynamisch via JavaScript -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Suchleiste -->
+<div class="container my-4">
+  <form class="row g-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Stichwortsuche (z. B. Balkon, Garten...)">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select">
+        <option selected>Stadt wählen</option>
+        <option>Berlin</option>
+        <option>Hamburg</option>
+        <option>München</option>
+        <option>Köln</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis min (€)">
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis max (€)">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Suchen</button>
+    </div>
+  </form>
+</div>
+
+<!-- Impressum & Datenschutz -->
+<div class="content">
+  <h2>Impressum</h2>
+  <p><strong>ImmoManager GmbH</strong><br>
+  Musterstraße 12<br>
+  12345 Berlin<br>
+  Deutschland</p>
+
+  <p><strong>Vertreten durch:</strong><br>
+  Max Mustermann</p>
+
+  <p><strong>Kontakt:</strong><br>
+  Telefon: +49 123 456789<br>
+  E-Mail: kontakt@immomanager.de</p>
+
+  <p><strong>Umsatzsteuer-ID:</strong><br>
+  DE123456789</p>
+
+  <hr>
+
+  <h2>Datenschutzerklärung</h2>
+  <p>Der Schutz Ihrer persönlichen Daten ist uns wichtig. Ihre Daten werden ausschließlich gemäß den gesetzlichen Datenschutzvorschriften (DSGVO) verarbeitet.</p>
+
+  <h5>Erhebung und Verarbeitung personenbezogener Daten</h5>
+  <p>Wir speichern personenbezogene Daten (z. B. Name, E-Mail), wenn Sie uns diese freiwillig übermitteln, z. B. durch eine Anfrage über das Kontaktformular.</p>
+
+  <h5>Cookies</h5>
+  <p>Unsere Website verwendet Cookies, um die Benutzerfreundlichkeit zu verbessern. Sie können die Verwendung von Cookies in Ihrem Browser deaktivieren.</p>
+
+  <h5>Auskunftsrecht</h5>
+  <p>Sie haben das Recht auf Auskunft über Ihre gespeicherten Daten sowie ein Recht auf Berichtigung, Sperrung oder Löschung.</p>
+
+  <p>Bei Fragen zum Datenschutz wenden Sie sich bitte an <a href="mailto:datenschutz@immomanager.de">datenschutz@immomanager.de</a>.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const userRole = 'user'; // Oder 'admin'
+
+  const navLinks = document.getElementById('nav-links');
+  const baseLinks = `
+    <li class="nav-item"><a class="nav-link" href="index.html">Startseite</a></li>
+    <li class="nav-item"><a class="nav-link" href="immobilien-uebersicht.html">Immobilien</a></li>
+  `;
+
+  let roleLinks = '';
+  if (userRole === 'admin') {
+    roleLinks = `
+      <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="immobilie-neu.html">Immobilie hinzufügen</a></li>
+    `;
+  } else if (userRole === 'user') {
+    roleLinks = `<li class="nav-item"><a class="nav-link" href="favoriten.html">Favoriten</a></li>`;
+  }
+
+  navLinks.innerHTML = `
+    ${baseLinks}
+    ${roleLinks}
+    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+    <li class="nav-item"><a class="nav-link active" href="impressum.html">Impressum</a></li>
+  `;
+</script>
+
+</body>
+</html>

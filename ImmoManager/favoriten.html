@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meine Favoriten – ImmoManager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .property-card img {
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">ImmoManager</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav" id="nav-links">
+        <!-- Wird dynamisch per JS gesetzt -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Suchleiste -->
+<div class="container my-4">
+  <form class="row g-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Stichwortsuche (z. B. Balkon, Garten...)">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select">
+        <option selected>Stadt wählen</option>
+        <option>Berlin</option>
+        <option>Hamburg</option>
+        <option>München</option>
+        <option>Köln</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis min (€)">
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis max (€)">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Suchen</button>
+    </div>
+  </form>
+</div>
+
+<!-- Favoritenübersicht -->
+<div class="container mt-4 mb-5">
+  <h2 class="mb-4">Meine Favoriten</h2>
+  <div class="row g-4">
+
+    <div class="col-md-4">
+      <div class="card property-card">
+        <img src="https://source.unsplash.com/400x300/?villa" class="card-img-top" alt="Villa">
+        <div class="card-body">
+          <h5 class="card-title">Luxusvilla am See</h5>
+          <p class="card-text">München • 1.400.000 €</p>
+          <button class="btn btn-outline-danger btn-sm">Aus Favoriten entfernen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card property-card">
+        <img src="https://source.unsplash.com/400x300/?apartment" class="card-img-top" alt="Wohnung">
+        <div class="card-body">
+          <h5 class="card-title">City-Apartment mit Balkon</h5>
+          <p class="card-text">Berlin • 520.000 €</p>
+          <button class="btn btn-outline-danger btn-sm">Aus Favoriten entfernen</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card property-card">
+        <img src="https://source.unsplash.com/400x300/?house" class="card-img-top" alt="Haus">
+        <div class="card-body">
+          <h5 class="card-title">Reihenhaus mit Garten</h5>
+          <p class="card-text">Köln • 650.000 €</p>
+          <button class="btn btn-outline-danger btn-sm">Aus Favoriten entfernen</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Aktuelle Benutzerrolle
+  const userRole = 'user'; // Oder 'admin'
+
+  const navLinks = document.getElementById('nav-links');
+  const baseLinks = `
+    <li class="nav-item"><a class="nav-link" href="index.html">Startseite</a></li>
+    <li class="nav-item"><a class="nav-link" href="immobilien-uebersicht.html">Immobilien</a></li>
+  `;
+
+  let roleLinks = '';
+  if (userRole === 'admin') {
+    roleLinks = `
+      <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="immobilie-neu.html">Immobilie hinzufügen</a></li>
+    `;
+  } else if (userRole === 'user') {
+    roleLinks = `<li class="nav-item"><a class="nav-link active" href="favoriten.html">Favoriten</a></li>`;
+  }
+
+  navLinks.innerHTML = `
+    ${baseLinks}
+    ${roleLinks}
+    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+    <li class="nav-item"><a class="nav-link" href="impressum.html">Impressum</a></li>
+  `;
+</script>
+
+</body>
+</html>

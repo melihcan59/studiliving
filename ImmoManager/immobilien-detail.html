@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Immobilien-Details – ImmoManager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .property-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    #map {
+      height: 300px;
+      background-color: #e9ecef;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">ImmoManager</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav" id="nav-links">
+        <!-- Dynamisch via JavaScript -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Suchleiste -->
+<div class="container my-4">
+  <form class="row g-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Stichwortsuche (z. B. Balkon, Garten...)">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select">
+        <option selected>Stadt wählen</option>
+        <option>Berlin</option>
+        <option>Hamburg</option>
+        <option>München</option>
+        <option>Köln</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis min (€)">
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis max (€)">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Suchen</button>
+    </div>
+  </form>
+</div>
+
+<!-- Immobilieninhalt -->
+<div class="container mt-4 mb-5">
+  <img src="https://source.unsplash.com/1600x400/?house,villa" alt="Immobilienbild" class="property-image">
+
+  <div class="row">
+    <div class="col-lg-8">
+      <h2>Luxusvilla mit Pool</h2>
+      <p class="text-muted">Musterstraße 123, 12345 München</p>
+      <h4 class="text-primary">1.500.000 €</h4>
+      <p>Diese exklusive Villa bietet höchsten Wohnkomfort mit großzügigen Räumen, einem privaten Pool, Garten und hochwertiger Ausstattung. Ideal für Familien oder Paare mit Anspruch.</p>
+
+      <h5 class="mt-4">Lage</h5>
+      <div id="map" class="mb-4">[Kartenplatzhalter – Leaflet oder Google Maps]</div>
+
+      <button class="btn btn-outline-secondary mb-3">♡ Favorisieren</button>
+    </div>
+
+    <!-- Kontaktformular -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Anfrage senden</h5>
+          <form>
+            <div class="mb-3">
+              <label for="name" class="form-label">Ihr Name</label>
+              <input type="text" class="form-control" id="name" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Ihre E-Mail</label>
+              <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">Nachricht</label>
+              <textarea class="form-control" id="message" rows="3" required>Ich interessiere mich für diese Immobilie. Bitte senden Sie mir weitere Informationen.</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Nachricht senden</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  // Rolle: 'user' oder 'admin'
+  const userRole = 'user';
+
+  const navLinks = document.getElementById('nav-links');
+  const baseLinks = `
+    <li class="nav-item"><a class="nav-link" href="index.html">Startseite</a></li>
+    <li class="nav-item"><a class="nav-link" href="immobilien-uebersicht.html">Immobilien</a></li>
+  `;
+
+  let roleLinks = '';
+  if (userRole === 'admin') {
+    roleLinks = `
+      <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link" href="immobilie-neu.html">Immobilie hinzufügen</a></li>
+    `;
+  } else if (userRole === 'user') {
+    roleLinks = `<li class="nav-item"><a class="nav-link" href="favoriten.html">Favoriten</a></li>`;
+  }
+
+  navLinks.innerHTML = `
+    ${baseLinks}
+    ${roleLinks}
+    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+    <li class="nav-item"><a class="nav-link" href="impressum.html">Impressum</a></li>
+  `;
+</script>
+
+</body>
+</html>

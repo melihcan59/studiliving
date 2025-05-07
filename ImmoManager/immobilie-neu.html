@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neue Immobilie anlegen – ImmoManager</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .form-container {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 30px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="index.html">ImmoManager</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav" id="nav-links">
+        <!-- Wird per JavaScript gesetzt -->
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Suchleiste -->
+<div class="container my-4">
+  <form class="row g-3">
+    <div class="col-md-4">
+      <input type="text" class="form-control" placeholder="Stichwortsuche (z. B. Balkon, Garten...)">
+    </div>
+    <div class="col-md-2">
+      <select class="form-select">
+        <option selected>Stadt wählen</option>
+        <option>Berlin</option>
+        <option>Hamburg</option>
+        <option>München</option>
+        <option>Köln</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis min (€)">
+    </div>
+    <div class="col-md-2">
+      <input type="number" class="form-control" placeholder="Preis max (€)">
+    </div>
+    <div class="col-md-2">
+      <button type="submit" class="btn btn-primary w-100">Suchen</button>
+    </div>
+  </form>
+</div>
+
+<!-- Formular -->
+<div class="form-container">
+  <h2>Neue Immobilie anlegen</h2>
+  <form novalidate>
+    <div class="mb-3">
+      <label for="title" class="form-label">Titel</label>
+      <input type="text" class="form-control" id="title" required>
+      <div class="invalid-feedback">Bitte einen Titel angeben.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Beschreibung</label>
+      <textarea class="form-control" id="description" rows="4" required></textarea>
+      <div class="invalid-feedback">Bitte eine Beschreibung eingeben.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="address" class="form-label">Adresse</label>
+      <input type="text" class="form-control" id="address" required>
+      <div class="invalid-feedback">Adresse erforderlich.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="city" class="form-label">Stadt</label>
+      <input type="text" class="form-control" id="city" required>
+      <div class="invalid-feedback">Stadt erforderlich.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="price" class="form-label">Preis (€)</label>
+      <input type="number" class="form-control" id="price" required min="0">
+      <div class="invalid-feedback">Bitte einen gültigen Preis angeben.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="image" class="form-label">Bild-Upload</label>
+      <input type="file" class="form-control" id="image" accept="image/*" required>
+      <div class="invalid-feedback">Bitte ein Bild auswählen.</div>
+    </div>
+
+    <div class="mb-3">
+      <label for="status" class="form-label">Status</label>
+      <select class="form-select" id="status" required>
+        <option value="">Bitte wählen...</option>
+        <option value="frei">Frei</option>
+        <option value="vermietet">Vermietet</option>
+      </select>
+      <div class="invalid-feedback">Status muss ausgewählt werden.</div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Immobilie speichern</button>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  const userRole = 'admin';
+
+  const navLinks = document.getElementById('nav-links');
+  const baseLinks = `
+    <li class="nav-item"><a class="nav-link" href="index.html">Startseite</a></li>
+    <li class="nav-item"><a class="nav-link" href="immobilien-uebersicht.html">Immobilien</a></li>
+  `;
+
+  let roleLinks = '';
+  if (userRole === 'admin') {
+    roleLinks = `
+      <li class="nav-item"><a class="nav-link" href="admin-dashboard.html">Dashboard</a></li>
+      <li class="nav-item"><a class="nav-link active" href="immobilie-neu.html">Immobilie hinzufügen</a></li>
+    `;
+  } else if (userRole === 'user') {
+    roleLinks = `<li class="nav-item"><a class="nav-link" href="favoriten.html">Favoriten</a></li>`;
+  }
+
+  navLinks.innerHTML = `
+    ${baseLinks}
+    ${roleLinks}
+    <li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
+    <li class="nav-item"><a class="nav-link" href="impressum.html">Impressum</a></li>
+  `;
+
+  // Validierung aktivieren
+  document.querySelector('form').addEventListener('submit', function (event) {
+    if (!this.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    this.classList.add('was-validated');
+  });
+</script>
+
+</body>
+</html>
