@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Immobilie erstellen</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">ImmoPlattform</div>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html">Start</a></li>
+        <li><a href="/static/profil.html">Profil</a></li>
+        <li><a href="/static/my_properties.html">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html">Neue Immobilie</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+  <main class="auth-form">
+    <h2 class="auth-form-title">Neue Immobilie anlegen</h2>
+    <form action="/properties/create" method="post">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input class="form-control" name="name" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bundesland</label>
+        <input class="form-control" name="bundesland" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stadt</label>
+        <input class="form-control" name="stadt" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Straße</label>
+        <input class="form-control" name="strasse">
+      </div>
+      <div class="form-group">
+        <label class="form-label">PLZ</label>
+        <input class="form-control" name="plz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Latitude</label>
+        <input class="form-control" name="latitude" type="number" step="any">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Longitude</label>
+        <input class="form-control" name="longitude" type="number" step="any">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Gebäude-ID</label>
+        <input class="form-control" name="gebaeude_id" type="number">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kategorie</label>
+        <input class="form-control" name="gebaeudekategorie">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kurzbeschreibung</label>
+        <input class="form-control" name="kurzbeschreibung">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Beschreibung</label>
+        <textarea class="form-control" name="beschreibung"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preis</label>
+        <input class="form-control" name="preis">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bild-URL</label>
+        <input class="form-control" name="bild_url">
+      </div>
+      <button class="btn btn-primary btn-block">Erstellen</button>
+    </form>
+  </main>
+</body>
+</html>

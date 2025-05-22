@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Wohnungsplattform – Start</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">ImmoPlattform</div>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html">Start</a></li>
+        <li><a href="/static/profil.html">Profil</a></li>
+        <li><a href="/static/my_properties.html">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html">Neue Immobilie</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+  <main class="container content-section">
+    <h2 class="text-2xl font-bold mb-4">Alle Immobilien</h2>
+    <div id="properties" class="property-grid"></div>
+  </main>
+  <script>
+    fetch('/properties/public')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('properties');
+        data.forEach(p => {
+          container.innerHTML += `
+            <div class="card">
+              <div class="card-image">
+                <img src="${p.bild_url}" alt="${p.name}">
+              </div>
+              <div class="card-content">
+                <div class="card-title">${p.name}</div>
+                <div class="card-price">${p.preis}</div>
+                <div class="card-location">${p.stadt}, ${p.plz}</div>
+                <p>${p.kurzbeschreibung}</p>
+              </div>
+            </div>`;
+        });
+      });
+  </script>
+</body>
+</html>

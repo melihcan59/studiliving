@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Profil bearbeiten</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">ImmoPlattform</div>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html">Start</a></li>
+        <li><a href="/static/profil.html">Profil</a></li>
+        <li><a href="/static/my_properties.html">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html">Neue Immobilie</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+  <main class="auth-form">
+    <h2 class="auth-form-title">Profil bearbeiten</h2>
+    <form action="/profil/update" method="post">
+      <div class="form-group">
+        <label class="form-label">Typ</label>
+        <input class="form-control" name="typ">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Alter</label>
+        <input class="form-control" type="number" name="alter">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Stadt</label>
+        <input class="form-control" name="stadt">
+      </div>
+      <div class="form-group">
+        <label class="form-label">PLZ</label>
+        <input class="form-control" name="plz">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Land</label>
+        <input class="form-control" name="land">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Über mich</label>
+        <textarea class="form-control" name="ueber_mich"></textarea>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Speichern</button>
+    </form>
+  </main>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Immobilie bearbeiten</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">ImmoPlattform</div>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html">Start</a></li>
+        <li><a href="/static/profil.html">Profil</a></li>
+        <li><a href="/static/my_properties.html">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html">Neue Immobilie</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <main class="auth-form">
+    <h2 class="auth-form-title">Immobilie bearbeiten</h2>
+    <form id="editForm">
+      <div class="form-group"><label>Name</label><input class="form-control" id="name" name="name" required></div>
+      <div class="form-group"><label>Bundesland</label><input class="form-control" id="bundesland" name="bundesland" required></div>
+      <div class="form-group"><label>Stadt</label><input class="form-control" id="stadt" name="stadt" required></div>
+      <div class="form-group"><label>Straße</label><input class="form-control" id="strasse" name="strasse" required></div>
+      <div class="form-group"><label>PLZ</label><input class="form-control" id="plz" name="plz" required></div>
+      <div class="form-group"><label>Latitude</label><input class="form-control" id="latitude" name="latitude" type="number" step="any" required></div>
+      <div class="form-group"><label>Longitude</label><input class="form-control" id="longitude" name="longitude" type="number" step="any" required></div>
+      <div class="form-group"><label>Gebäude-ID</label><input class="form-control" id="gebaeude_id" name="gebaeude_id" type="number" required></div>
+      <div class="form-group"><label>Gebäudekategorie</label><input class="form-control" id="gebaeudekategorie" name="gebaeudekategorie" required></div>
+      <div class="form-group"><label>Kurzbeschreibung</label><input class="form-control" id="kurzbeschreibung" name="kurzbeschreibung" required></div>
+      <div class="form-group"><label>Beschreibung</label><textarea class="form-control" id="beschreibung" name="beschreibung" required></textarea></div>
+      <div class="form-group"><label>Preis</label><input class="form-control" id="preis" name="preis" required></div>
+      <div class="form-group"><label>Bild-URL</label><input class="form-control" id="bild_url" name="bild_url" required></div>
+      <button class="btn btn-primary btn-block" type="submit">Speichern</button>
+    </form>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const propertyId = params.get('id');
+
+    // Daten laden
+    fetch(`/properties`)
+      .then(res => res.json())
+      .then(data => {
+        const prop = data.find(p => p.id == propertyId);
+        if (prop) {
+          for (const key in prop) {
+            const input = document.getElementById(key);
+            if (input) input.value = prop[key];
+          }
+        }
+      });
+
+    // Formular absenden
+    document.getElementById('editForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch(`/properties/update/${propertyId}`, {
+        method: 'POST',
+        body: formData
+      }).then(() => {
+        window.location.href = '/static/property_updated.html';
+      });
+    });
+  </script>
+</body>
+</html>
