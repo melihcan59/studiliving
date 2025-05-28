@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Immobilie löschen</title>
+  <link rel="stylesheet" href="/static/style.css?v=1">
+
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">ImmoPlattform</a>
+    </div>
+  </header>
+
+  <!-- ===== DELETE CONFIRMATION ===== -->
+  <main class="container mt-lg">
+    <div class="form text-center">
+      <h2 class="mb-md text-danger">Immobilie wirklich löschen?</h2>
+      <p class="mb-md">Diese Aktion kann <strong>nicht</strong> rückgängig gemacht werden.</p>
+
+      <div class="flex-center" style="gap: 1rem;">
+        <form method="post" id="deleteForm">
+          <input type="hidden" id="propertyId" name="propertyId">
+          <button class="btn btn-danger" type="submit">Ja, löschen</button>
+        </form>
+        <a class="btn btn-secondary" href="/static/my_properties.html">Abbrechen</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== SCRIPT ===== -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const propertyId = params.get('id');
+    document.getElementById('propertyId').value = propertyId;
+
+    document.getElementById('deleteForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      fetch(`/properties/${propertyId}`, {
+        method: 'DELETE'
+      }).then(() => {
+        window.location.href = '/static/my_properties.html';
+      });
+    });
+  </script>
+
+</body>
+</html>

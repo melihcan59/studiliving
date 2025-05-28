@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Immobiliendetails</title>
+  <link rel="stylesheet" href="/static/style.css?v=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">ImmoPlattform</a>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html" class="nav-link">Start</a></li>
+        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+        <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+        <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ===== DETAIL CONTENT ===== -->
+  <main class="container property-detail">
+    <div id="details" class="property-info">
+      <!-- Wird per JS gefüllt -->
+    </div>
+    <iframe id="map" class="property-map"></iframe>
+  </main>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    fetch(`/properties/public`)
+      .then(res => res.json())
+      .then(data => {
+        const prop = data.find(p => p.id == id);
+        if (!prop) {
+          document.getElementById('details').innerHTML = '<p>Immobilie nicht gefunden.</p>';
+          return;
+        }
+
+        const html = `
+          <div class="property-description">
+            <img src="${prop.bild_url}" alt="${prop.titel}" class="property-main-image" onerror="this.src='/static/fallback.jpg'">
+            <h2 class="property-title">${prop.titel}</h2>
+            <p class="property-location">${prop.strasse}, ${prop.plz} ${prop.stadt}, ${prop.bundesland}</p>
+            <p class="property-price">Kaltmiete: ${prop.kaltmiete.toFixed(2)} €<br>Warmmiete: ${prop.warmmiete.toFixed(2)} €</p>
+            <ul class="property-specs">
+              <li><span>Wohnfläche:</span><span>${prop.wohnflaeche} m²</span></li>
+              <li><span>Zimmer:</span><span>${prop.zimmer}</span></li>
+              <li><span>Etage:</span><span>${prop.etage}</span></li>
+              <li><span>Bezugsfrei ab:</span><span>${prop.bezugsfrei_ab}</span></li>
+              <li><span>Garage / Stellplatz:</span><span>${prop.garage}</span></li>
+              <li><span>Internet:</span><span>${prop.internet}</span></li>
+              <li><span>Ausstattung:</span><span>${prop.ausstattung}</span></li>
+            </ul>
+            <div class="mt-md">
+              <strong>Beschreibung:</strong>
+              <p>${prop.beschreibung}</p>
+            </div>
+          </div>
+          <div class="property-sidebar">
+            <h3 class="mb-sm">Karte</h3>
+            <div id="leafletMap" class="property-map"></div>
+          </div>
+        `;
+
+        document.getElementById('details').innerHTML = html;
+
+        const map = L.map('leafletMap').setView([prop.latitude, prop.longitude], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        L.marker([prop.latitude, prop.longitude])
+          .addTo(map)
+          .bindPopup(prop.titel)
+          .openPopup();
+      });
+  </script>
+
+</body>
+</html>

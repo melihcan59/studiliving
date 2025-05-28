@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Registrierung</title>
+  <link rel="stylesheet" href="/static/style.css?v=1">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">ImmoPlattform</a>
+      <ul class="nav-menu">
+        <li><a href="/static/login.html" class="nav-link">Login</a></li>
+        <li><a href="/static/register.html" class="nav-link active">Registrieren</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ===== REGISTRATION FORM ===== -->
+  <main class="container mt-lg">
+    <div class="form">
+      <h2 class="text-center mb-md">Registrieren</h2>
+      <form action="/register" method="post">
+        <div class="form-group">
+          <label class="form-label">Benutzername</label>
+          <input class="form-input" type="text" name="username" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-Mail</label>
+          <input class="form-input" type="email" name="email" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Passwort</label>
+          <input class="form-input" type="password" name="password" required>
+        </div>
+        <button class="btn btn-primary w-full" type="submit">Registrieren</button>
+      </form>
+    </div>
+  </main>
+
+</body>
+</html>

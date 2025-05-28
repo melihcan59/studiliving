@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <title>Immobilienkarte</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/style.css?v=1">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 80vh;
+      width: 100%;
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-light);
+      margin-top: var(--spacing-md);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">ImmoPlattform</a>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html" class="nav-link">Start</a></li>
+        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+        <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+        <li><a href="/static/map.html" class="nav-link active">Karte</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ===== MAP SECTION ===== -->
+  <main class="container content-section">
+    <h2 class="text-2xl font-bold mb-md">Alle Immobilien auf der Karte</h2>
+    <div id="map"></div>
+  </main>
+
+  <!-- ===== SCRIPTS ===== -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    fetch('/properties/public')
+      .then(res => res.json())
+      .then(properties => {
+        const map = L.map('map').setView([51.1657, 10.4515], 6); // Deutschland-Zentrum
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        properties.forEach(p => {
+          if (p.latitude && p.longitude) {
+            L.marker([p.latitude, p.longitude])
+              .addTo(map)
+              .bindPopup(`
+                <strong>${p.name}</strong><br>
+                ${p.stadt}, ${p.plz}<br>
+                ${p.kurzbeschreibung || 'Keine Beschreibung'}
+              `);
+          }
+        });
+      });
+  </script>
+
+</body>
+</html>

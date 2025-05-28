@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Benutzerübersicht</title>
+  <link rel="stylesheet" href="/static/style.css?v=1">
+</head>
+<body>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="logo">Adminbereich</div>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html">Start</a></li>
+        <li><a href="/static/profil.html">Profil</a></li>
+        <li><a href="/static/admin_users.html">Alle Nutzer</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+  <main class="container content-section">
+    <h2 class="text-2xl font-bold mb-4">Alle Benutzer</h2>
+    <table class="w-100">
+      <thead>
+        <tr><th>ID</th><th>Benutzername</th><th>Email</th></tr>
+      </thead>
+      <tbody id="userlist"></tbody>
+    </table>
+  </main>
+  <script>
+    fetch('/users')
+      .then(res => res.json())
+      .then(data => {
+        const table = document.getElementById('userlist');
+        data.forEach(user => {
+          table.innerHTML += `<tr><td>${user.id}</td><td>${user.username}</td><td>${user.email}</td></tr>`;
+        });
+      });
+  </script>
+</body>
+</html>

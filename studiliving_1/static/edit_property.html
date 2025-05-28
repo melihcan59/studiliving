@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Immobilie bearbeiten</title>
+  <link rel="stylesheet" href="/static/style.css?v=1">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">ImmoPlattform</a>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html" class="nav-link">Start</a></li>
+        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+        <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ===== FORM ===== -->
+  <main class="container mt-lg">
+    <div class="form">
+      <h2 class="text-center mb-md">Immobilie bearbeiten</h2>
+      <form id="editForm">
+        <div class="form-group"><label class="form-label">Titel</label><input class="form-input" name="titel" required></div>
+        <div class="form-group"><label class="form-label">Straße</label><input class="form-input" name="strasse"></div>
+        <div class="form-group"><label class="form-label">PLZ</label><input class="form-input" name="plz"></div>
+        <div class="form-group"><label class="form-label">Stadt</label><input class="form-input" name="stadt" required></div>
+        <div class="form-group"><label class="form-label">Bundesland</label><input class="form-input" name="bundesland" required></div>
+        <div class="form-group"><label class="form-label">Kaltmiete (€)</label><input class="form-input" name="kaltmiete" type="number" step="any"></div>
+        <div class="form-group"><label class="form-label">Warmmiete (€)</label><input class="form-input" name="warmmiete" type="number" step="any"></div>
+        <div class="form-group"><label class="form-label">Wohnfläche (m²)</label><input class="form-input" name="wohnflaeche" type="number" step="any"></div>
+        <div class="form-group"><label class="form-label">Zimmer</label><input class="form-input" name="zimmer" type="number"></div>
+        <div class="form-group"><label class="form-label">Schlafzimmer</label><input class="form-input" name="schlafzimmer" type="number"></div>
+        <div class="form-group"><label class="form-label">Badezimmer</label><input class="form-input" name="badezimmer" type="number"></div>
+        <div class="form-group"><label class="form-label">Bezugsfrei ab</label><input class="form-input" name="bezugsfrei_ab" type="text"></div>
+        <div class="form-group"><label class="form-label">Etage</label><input class="form-input" name="etage" type="text"></div>
+        <div class="form-group"><label class="form-label">Typ</label><input class="form-input" name="typ"></div>
+        <div class="form-group"><label class="form-label">Ausstattung</label><input class="form-input" name="ausstattung"></div>
+        <div class="form-group"><label class="form-label">Garage / Stellplatz</label><input class="form-input" name="garage"></div>
+        <div class="form-group"><label class="form-label">Internet</label><input class="form-input" name="internet"></div>
+        <div class="form-group"><label class="form-label">Kurzbeschreibung</label><input class="form-input" name="kurzbeschreibung"></div>
+        <div class="form-group"><label class="form-label">Beschreibung</label><textarea class="form-textarea" name="beschreibung"></textarea></div>
+        <div class="form-group"><label class="form-label">Bild-URL</label><input class="form-input" name="bild_url"></div>
+        <button class="btn btn-primary w-full" type="submit">Änderungen speichern</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- ===== SCRIPT ===== -->
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const propertyId = params.get("id");
+
+    // Daten holen und Felder ausfüllen
+    fetch("/properties")
+      .then(res => res.json())
+      .then(data => {
+        const prop = data.find(p => p.id == propertyId);
+        if (prop) {
+          const form = document.getElementById("editForm");
+          for (const key in prop) {
+            const field = form.querySelector(`[name="${key}"]`);
+            if (field) field.value = prop[key];
+          }
+        }
+      });
+
+    // Änderungen absenden
+    document.getElementById("editForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      fetch(`/properties/update/${propertyId}`, {
+        method: "POST",
+        body: formData
+      }).then(() => {
+        window.location.href = "/static/property_updated.html";
+      });
+    });
+  </script>
+
+</body>
+</html>

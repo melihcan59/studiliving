@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Meine Immobilien</title>
+  <link rel="stylesheet" href="/static/style.css?v=1">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="header">
+    <div class="container nav">
+      <a href="#" class="logo">ImmoPlattform</a>
+      <ul class="nav-menu">
+        <li><a href="/static/index.html" class="nav-link">Start</a></li>
+        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+        <li><a href="/static/my_properties.html" class="nav-link active">Meine Immobilien</a></li>
+        <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+        <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+        <li><a href="/logout" class="nav-link" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- ===== CONTENT ===== -->
+  <main class="container content-section">
+    <h2 class="text-2xl font-bold mb-md">Meine Immobilien</h2>
+    <div id="properties" class="property-grid"></div>
+  </main>
+
+  <!-- ===== SCRIPT ===== -->
+  <script>
+    fetch('/properties')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('properties');
+        data.forEach(p => {
+          container.innerHTML += `
+            <div class="property-card">
+              <img src="${p.bild_url}" alt="${p.titel}" class="property-image" onerror="this.src='/static/fallback.jpg'">
+              <div class="property-content">
+                <h3 class="property-title">${p.titel}</h3>
+                <p class="property-price">${p.kaltmiete.toFixed(2)} € Kaltmiete</p>
+                <p class="property-location">${p.stadt}, ${p.plz}</p>
+                <div class="property-features">
+                  <span class="property-feature">${p.wohnflaeche} m²</span>
+                  <span class="property-feature">${p.zimmer} Zi.</span>
+                </div>
+                <div class="property-actions">
+                  <a class="btn btn-secondary btn-sm" href="/static/edit_property.html?id=${p.id}">Bearbeiten</a>
+                  <a class="btn btn-danger btn-sm" href="/static/confirm_delete.html?id=${p.id}">Löschen</a>
+                </div>
+              </div>
+            </div>`;
+        });
+      });
+  </script>
+
+</body>
+</html>
