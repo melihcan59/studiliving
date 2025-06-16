@@ -170,11 +170,11 @@
         <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
         
         <ul class="nav-menu" id="navMenu">
-          <li><a href="/static/index.html" class="nav-link active">Start</a></li>
+          <li><a href="/static/index.html" class="nav-link">Start</a></li>
           <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
           <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
           <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
-          <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+          <li><a href="/static/map.html" class="nav-link active">Karte</a></li>
           <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
         </ul>
 
@@ -279,6 +279,12 @@
 
     // Initialization
     document.addEventListener('DOMContentLoaded', function() {
+      // Navigation Active State Management - FIX HINZUGEFÜGT
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      document.querySelector('a[href="/static/map.html"]').classList.add('active');
+
       initializeEventListeners();
       loadProperties();
     });
