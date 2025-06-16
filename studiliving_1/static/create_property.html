@@ -2,118 +2,669 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Immobilie erstellen</title>
-  <link rel="stylesheet" href="/static/style.css?v=1">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Immobilie erstellen – ImmoPlattform</title>
+  <link rel="stylesheet" href="/static/style.css?v=2">
+  <!-- Autor: Dennis | Modernisierte Multi-Step Property Creation -->
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
+  <!-- ===== MODERNIZED HEADER ===== -->
   <header class="header">
-    <div class="container nav">
-      <a href="#" class="logo">ImmoPlattform</a>
-      <ul class="nav-menu">
-        <li><a href="/static/index.html" class="nav-link">Start</a></li>
-        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
-        <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
-        <li><a href="/static/create_property.html" class="nav-link active">Neue Immobilie</a></li>
-        <li><a href="/static/map.html" class="nav-link">Karte</a></li>
-        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
-      </ul>
+    <div class="container">
+      <nav class="nav">
+        <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
+        
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="/static/index.html" class="nav-link">Start</a></li>
+          <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+          <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
+          <li><a href="/static/create_property.html" class="nav-link active">Neue Immobilie</a></li>
+          <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+          <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+        </ul>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Menü öffnen">
+          ☰
+        </button>
+      </nav>
     </div>
   </header>
 
-  <!-- ===== FORM ===== -->
-  <main class="container mt-lg">
-    <div class="form">
-      <h2 class="text-center mb-md">Neue Immobilie anlegen</h2>
-      <form action="/properties/create" method="post">
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="content-section">
+    <div class="container" style="max-width: 800px;">
+      
+      <!-- Page Header -->
+      <div class="text-center mb-lg">
+        <h1 class="text-3xl font-bold mb-md">🏠 Neue Immobilie erstellen</h1>
+        <p style="color: #64748b; font-size: 1.125rem;">
+          Erstellen Sie Ihre Immobilienanzeige in nur 3 einfachen Schritten
+        </p>
+      </div>
 
-        <div class="form-group">
-          <label class="form-label">Titel</label>
-          <input class="form-input" name="titel" required>
+      <!-- Progress Indicator -->
+      <div style="margin-bottom: 3rem;">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+          <div class="step-indicator" data-step="1">
+            <div class="step-circle active">1</div>
+            <span class="step-label">Grunddaten</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step-indicator" data-step="2">
+            <div class="step-circle">2</div>
+            <span class="step-label">Details</span>
+          </div>
+          <div class="step-line"></div>
+          <div class="step-indicator" data-step="3">
+            <div class="step-circle">3</div>
+            <span class="step-label">Beschreibung</span>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Straße</label>
-          <input class="form-input" name="strasse">
-        </div>
-        <div class="form-group">
-          <label class="form-label">PLZ</label>
-          <input class="form-input" name="plz">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Stadt</label>
-          <input class="form-input" name="stadt" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Bundesland</label>
-          <input class="form-input" name="bundesland" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kaltmiete (€)</label>
-          <input class="form-input" name="kaltmiete" type="number" step="any">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Warmmiete (€)</label>
-          <input class="form-input" name="warmmiete" type="number" step="any">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Wohnfläche (m²)</label>
-          <input class="form-input" name="wohnflaeche" type="number" step="any">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Zimmer</label>
-          <input class="form-input" name="zimmer" type="number">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Schlafzimmer</label>
-          <input class="form-input" name="schlafzimmer" type="number">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Badezimmer</label>
-          <input class="form-input" name="badezimmer" type="number">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Bezugsfrei ab</label>
-          <input class="form-input" name="bezugsfrei_ab" type="text">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Etage</label>
-          <input class="form-input" name="etage" type="text">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Typ</label>
-          <input class="form-input" name="typ">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ausstattung</label>
-          <input class="form-input" name="ausstattung">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Garage / Stellplatz</label>
-          <input class="form-input" name="garage">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Internet</label>
-          <input class="form-input" name="internet">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kurzbeschreibung</label>
-          <input class="form-input" name="kurzbeschreibung">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Beschreibung</label>
-          <textarea class="form-textarea" name="beschreibung"></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Bild-URL</label>
-          <input class="form-input" name="bild_url">
-        </div>
+      </div>
 
-        <button class="btn btn-primary w-full" type="submit">Erstellen</button>
-      </form>
+      <!-- Multi-Step Form -->
+      <div class="form">
+        <form action="/properties/create" method="post" id="propertyForm">
+
+          <!-- ===== STEP 1: GRUNDDATEN ===== -->
+          <div class="form-step active" data-step="1">
+            <h3 style="color: #3b82f6; font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              🏠 Grunddaten Ihrer Immobilie
+            </h3>
+
+            <!-- Titel -->
+            <div class="form-group">
+              <label class="form-label">📝 Titel der Anzeige *</label>
+              <input 
+                class="form-input" 
+                name="titel" 
+                required 
+                placeholder="z.B. Schöne 3-Zimmer Wohnung in München-Schwabing"
+                maxlength="100"
+              >
+              <small style="color: #64748b; font-size: 0.875rem;">
+                💡 Ein aussagekräftiger Titel erhöht die Aufmerksamkeit
+              </small>
+            </div>
+
+            <!-- Adresse Grid -->
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+              <div class="form-group">
+                <label class="form-label">🛣️ Straße & Hausnummer</label>
+                <input class="form-input" name="strasse" placeholder="z.B. Leopoldstraße 123">
+              </div>
+              <div class="form-group">
+                <label class="form-label">📮 PLZ *</label>
+                <input class="form-input" name="plz" placeholder="80802" pattern="[0-9]{5}" maxlength="5">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label class="form-label">🏙️ Stadt *</label>
+                <input class="form-input" name="stadt" required placeholder="z.B. München">
+              </div>
+              <div class="form-group">
+                <label class="form-label">🗺️ Bundesland *</label>
+                <select class="form-select" name="bundesland" required>
+                  <option value="">Bitte wählen</option>
+                  <option value="Baden-Württemberg">Baden-Württemberg</option>
+                  <option value="Bayern">Bayern</option>
+                  <option value="Berlin">Berlin</option>
+                  <option value="Brandenburg">Brandenburg</option>
+                  <option value="Bremen">Bremen</option>
+                  <option value="Hamburg">Hamburg</option>
+                  <option value="Hessen">Hessen</option>
+                  <option value="Mecklenburg-Vorpommern">Mecklenburg-Vorpommern</option>
+                  <option value="Niedersachsen">Niedersachsen</option>
+                  <option value="Nordrhein-Westfalen">Nordrhein-Westfalen</option>
+                  <option value="Rheinland-Pfalz">Rheinland-Pfalz</option>
+                  <option value="Saarland">Saarland</option>
+                  <option value="Sachsen">Sachsen</option>
+                  <option value="Sachsen-Anhalt">Sachsen-Anhalt</option>
+                  <option value="Schleswig-Holstein">Schleswig-Holstein</option>
+                  <option value="Thüringen">Thüringen</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Navigation -->
+            <div style="display: flex; justify-content: flex-end; margin-top: 2rem;">
+              <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                Weiter ➡️
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STEP 2: DETAILS ===== -->
+          <div class="form-step" data-step="2">
+            <h3 style="color: #3b82f6; font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              📊 Immobilien-Details
+            </h3>
+
+            <!-- Preise -->
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #059669; font-size: 1.125rem; margin-bottom: 1rem;">💰 Preise</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label">💸 Kaltmiete (€) *</label>
+                  <input class="form-input" name="kaltmiete" type="number" step="0.01" min="0" placeholder="850" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🔥 Warmmiete (€)</label>
+                  <input class="form-input" name="warmmiete" type="number" step="0.01" min="0" placeholder="1050">
+                </div>
+              </div>
+            </div>
+
+            <!-- Raumaufteilung -->
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #059669; font-size: 1.125rem; margin-bottom: 1rem;">🏠 Raumaufteilung</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label">📐 Wohnfläche (m²) *</label>
+                  <input class="form-input" name="wohnflaeche" type="number" step="0.1" min="0" placeholder="75" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🏠 Anzahl Zimmer *</label>
+                  <select class="form-select" name="zimmer" required>
+                    <option value="">Wählen</option>
+                    <option value="1">1 Zimmer</option>
+                    <option value="2">2 Zimmer</option>
+                    <option value="3">3 Zimmer</option>
+                    <option value="4">4 Zimmer</option>
+                    <option value="5">5+ Zimmer</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🛏️ Schlafzimmer</label>
+                  <select class="form-select" name="schlafzimmer">
+                    <option value="">Optional</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4+</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🚿 Badezimmer</label>
+                  <select class="form-select" name="badezimmer">
+                    <option value="">Optional</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3+</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Weitere Details -->
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #059669; font-size: 1.125rem; margin-bottom: 1rem;">ℹ️ Weitere Angaben</h4>
+              <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                <div class="form-group">
+                  <label class="form-label">📅 Bezugsfrei ab</label>
+                  <input class="form-input" name="bezugsfrei_ab" type="text" placeholder="sofort / 01.07.2025">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🏢 Etage</label>
+                  <select class="form-select" name="etage">
+                    <option value="">Optional</option>
+                    <option value="Erdgeschoss">Erdgeschoss</option>
+                    <option value="1. OG">1. Obergeschoss</option>
+                    <option value="2. OG">2. Obergeschoss</option>
+                    <option value="3. OG">3. Obergeschoss</option>
+                    <option value="4+ OG">4+ Obergeschoss</option>
+                    <option value="Dachgeschoss">Dachgeschoss</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🏠 Immobilientyp</label>
+                  <select class="form-select" name="typ">
+                    <option value="">Optional</option>
+                    <option value="Wohnung">Wohnung</option>
+                    <option value="Haus">Haus</option>
+                    <option value="Villa">Villa</option>
+                    <option value="Penthouse">Penthouse</option>
+                    <option value="Loft">Loft</option>
+                    <option value="Studio">Studio</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">🌐 Internet</label>
+                  <select class="form-select" name="internet">
+                    <option value="">Optional</option>
+                    <option value="Verfügbar">Verfügbar</option>
+                    <option value="DSL">DSL</option>
+                    <option value="Glasfaser">Glasfaser</option>
+                    <option value="Nicht verfügbar">Nicht verfügbar</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Navigation -->
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+              <button type="button" class="btn btn-secondary btn-lg" onclick="prevStep()">
+                ⬅️ Zurück
+              </button>
+              <button type="button" class="btn btn-primary btn-lg" onclick="nextStep()">
+                Weiter ➡️
+              </button>
+            </div>
+          </div>
+
+          <!-- ===== STEP 3: BESCHREIBUNG ===== -->
+          <div class="form-step" data-step="3">
+            <h3 style="color: #3b82f6; font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem; text-align: center; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+              ✨ Beschreibung & Ausstattung
+            </h3>
+
+            <!-- Ausstattung -->
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #059669; font-size: 1.125rem; margin-bottom: 1rem;">🛠️ Ausstattung</h4>
+              <div class="form-group">
+                <label class="form-label">🏠 Ausstattung & Features</label>
+                <input 
+                  class="form-input" 
+                  name="ausstattung" 
+                  placeholder="z.B. Balkon, Einbauküche, Parkett, Fußbodenheizung"
+                >
+                <small style="color: #64748b; font-size: 0.875rem;">
+                  💡 Trennen Sie mehrere Features mit Kommas
+                </small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">🚗 Garage / Stellplatz</label>
+                <select class="form-select" name="garage">
+                  <option value="">Optional</option>
+                  <option value="Tiefgarage">Tiefgarage</option>
+                  <option value="Außenstellplatz">Außenstellplatz</option>
+                  <option value="Carport">Carport</option>
+                  <option value="Straßenparken">Straßenparken</option>
+                  <option value="Kein Parkplatz">Kein Parkplatz</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Beschreibungen -->
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #059669; font-size: 1.125rem; margin-bottom: 1rem;">📝 Beschreibung</h4>
+              <div class="form-group">
+                <label class="form-label">✨ Kurzbeschreibung</label>
+                <input 
+                  class="form-input" 
+                  name="kurzbeschreibung" 
+                  placeholder="z.B. Helle 3-Zimmer Wohnung mit Balkon in Top-Lage"
+                  maxlength="150"
+                >
+                <small style="color: #64748b; font-size: 0.875rem;">
+                  Erscheint in der Übersicht (max. 150 Zeichen)
+                </small>
+              </div>
+              <div class="form-group">
+                <label class="form-label">📖 Ausführliche Beschreibung</label>
+                <textarea 
+                  class="form-textarea" 
+                  name="beschreibung" 
+                  rows="6" 
+                  placeholder="Beschreiben Sie Ihre Immobilie ausführlich...
+
+• Was macht diese Immobilie besonders?
+• Wie ist die Lage und Umgebung?
+• Welche Geschäfte/Verkehrsmittel sind in der Nähe?
+• Gibt es besondere Highlights?"
+                  style="min-height: 150px;"
+                ></textarea>
+                <small style="color: #64748b; font-size: 0.875rem;">
+                  💡 Eine detaillierte Beschreibung erhöht das Interesse erheblich
+                </small>
+              </div>
+            </div>
+
+            <!-- Bild -->
+            <div style="margin-bottom: 2rem;">
+              <h4 style="color: #059669; font-size: 1.125rem; margin-bottom: 1rem;">📸 Titelbild</h4>
+              <div class="form-group">
+                <label class="form-label">🖼️ Bild-URL</label>
+                <input 
+                  class="form-input" 
+                  name="bild_url" 
+                  type="url" 
+                  placeholder="https://example.com/bild.jpg"
+                >
+                <small style="color: #64748b; font-size: 0.875rem;">
+                  💡 Ein ansprechendes Foto ist entscheidend für den Erfolg Ihrer Anzeige
+                </small>
+              </div>
+            </div>
+
+            <!-- Navigation -->
+            <div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+              <button type="button" class="btn btn-secondary btn-lg" onclick="prevStep()">
+                ⬅️ Zurück
+              </button>
+              <button type="submit" class="btn btn-primary btn-lg" style="background: linear-gradient(135deg, #10b981, #059669);">
+                🚀 Immobilie erstellen
+              </button>
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- Help Section -->
+      <div style="background: linear-gradient(135deg, #f1f5f9, #e2e8f0); padding: 2rem; border-radius: 1rem; margin-top: 2rem; text-align: center;">
+        <h4 style="color: #3b82f6; margin-bottom: 0.5rem;">💡 Tipp für erfolgreiche Anzeigen</h4>
+        <p style="color: #64748b; font-size: 0.875rem; margin: 0;">
+          Vollständige und ehrliche Angaben mit aussagekräftigen Bildern erhalten die meisten Anfragen!
+        </p>
+      </div>
+
     </div>
   </main>
+
+  <!-- ===== ENHANCED JAVASCRIPT ===== -->
+  <script>
+    // ===== MULTI-STEP FORM LOGIC =====
+    // Autor: Dennis | Property Creation Wizard
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      setupMobileMenu();
+      setupFormValidation();
+      updateStepDisplay();
+    });
+
+    // ===== STEP NAVIGATION =====
+    function nextStep() {
+      if (validateCurrentStep() && currentStep < totalSteps) {
+        currentStep++;
+        updateStepDisplay();
+        scrollToTop();
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        currentStep--;
+        updateStepDisplay();
+        scrollToTop();
+      }
+    }
+
+    function updateStepDisplay() {
+      // Update form steps
+      document.querySelectorAll('.form-step').forEach((step, index) => {
+        const stepNumber = index + 1;
+        if (stepNumber === currentStep) {
+          step.classList.add('active');
+          step.style.display = 'block';
+        } else {
+          step.classList.remove('active');
+          step.style.display = 'none';
+        }
+      });
+
+      // Update progress indicators
+      document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+        const stepNumber = index + 1;
+        const circle = indicator.querySelector('.step-circle');
+        
+        if (stepNumber <= currentStep) {
+          circle.classList.add('active');
+        } else {
+          circle.classList.remove('active');
+        }
+        
+        if (stepNumber === currentStep) {
+          circle.classList.add('current');
+        } else {
+          circle.classList.remove('current');
+        }
+      });
+    }
+
+    // ===== FORM VALIDATION =====
+    function validateCurrentStep() {
+      const currentFormStep = document.querySelector(`.form-step[data-step="${currentStep}"]`);
+      const requiredFields = currentFormStep.querySelectorAll('[required]');
+      let isValid = true;
+
+      requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+          field.style.borderColor = '#ef4444';
+          field.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+          isValid = false;
+          
+          // Remove error styling after user starts typing
+          field.addEventListener('input', function() {
+            this.style.borderColor = '';
+            this.style.boxShadow = '';
+          }, { once: true });
+        }
+      });
+
+      if (!isValid) {
+        showMessage('Bitte füllen Sie alle Pflichtfelder aus', 'error');
+      }
+
+      return isValid;
+    }
+
+    function setupFormValidation() {
+      // PLZ validation
+      const plzInput = document.querySelector('[name="plz"]');
+      plzInput?.addEventListener('input', function() {
+        this.value = this.value.replace(/\D/g, '').substring(0, 5);
+      });
+
+      // Auto-capitalize city names
+      const stadtInput = document.querySelector('[name="stadt"]');
+      stadtInput?.addEventListener('blur', function() {
+        if (this.value) {
+          this.value = this.value.toLowerCase()
+            .split(' ')
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+        }
+      });
+
+      // Character counter for title
+      const titleInput = document.querySelector('[name="titel"]');
+      if (titleInput) {
+        const counter = document.createElement('small');
+        counter.style.cssText = 'color: #64748b; font-size: 0.75rem; float: right;';
+        titleInput.parentNode.appendChild(counter);
+        
+        titleInput.addEventListener('input', function() {
+          const length = this.value.length;
+          counter.textContent = `${length}/100 Zeichen`;
+          counter.style.color = length > 90 ? '#ef4444' : '#64748b';
+        });
+      }
+    }
+
+    // ===== MOBILE MENU =====
+    function setupMobileMenu() {
+      const mobileToggle = document.getElementById('mobileToggle');
+      const navMenu = document.getElementById('navMenu');
+      
+      mobileToggle?.addEventListener('click', () => {
+        navMenu.classList.toggle('show');
+      });
+    }
+
+    // ===== UTILITY FUNCTIONS =====
+    function scrollToTop() {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed; top: 1rem; right: 1rem; z-index: 9999;
+        padding: 1rem 1.5rem; border-radius: 0.5rem; color: white;
+        background: ${type === 'success' ? '#10b981' : '#ef4444'};
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.3s ease;
+      `;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
+
+    // ===== FORM SUBMIT ENHANCEMENT =====
+    document.getElementById('propertyForm').addEventListener('submit', function(e) {
+      if (!validateCurrentStep()) {
+        e.preventDefault();
+        return;
+      }
+      
+      // Show loading state
+      const submitBtn = this.querySelector('[type="submit"]');
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '⏳ Wird erstellt...';
+      submitBtn.disabled = true;
+      
+      // Re-enable button if form submission fails
+      setTimeout(() => {
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+      }, 5000);
+    });
+  </script>
+
+  <!-- ===== STEP WIZARD STYLES ===== -->
+  <style>
+    /* Step Indicator Styles */
+    .step-indicator {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .step-circle {
+      width: 3rem;
+      height: 3rem;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 1.125rem;
+      transition: all 0.3s ease;
+      border: 3px solid transparent;
+    }
+
+    .step-circle.active {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .step-circle.current {
+      border-color: #f59e0b;
+      transform: scale(1.1);
+    }
+
+    .step-label {
+      font-size: 0.875rem;
+      color: #64748b;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .step-line {
+      width: 4rem;
+      height: 2px;
+      background: #e2e8f0;
+      margin: 1.5rem 0;
+    }
+
+    /* Form Step Styles */
+    .form-step {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .form-step.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .step-indicator {
+        font-size: 0.75rem;
+      }
+      
+      .step-circle {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 1rem;
+      }
+      
+      .step-line {
+        width: 2rem;
+      }
+      
+      .form {
+        padding: var(--space-6);
+      }
+    }
+
+    /* Mobile Menu */
+    @media (max-width: 768px) {
+      .nav-menu {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: var(--bg-primary);
+        flex-direction: column;
+        padding: var(--space-4);
+        box-shadow: var(--shadow-lg);
+        gap: var(--space-2);
+        border-radius: 0 0 var(--radius) var(--radius);
+      }
+
+      .nav-menu.show {
+        display: flex;
+      }
+
+      .mobile-menu-toggle {
+        display: block;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--text-primary);
+        padding: var(--space-2);
+      }
+    }
+  </style>
 
 </body>
 </html>

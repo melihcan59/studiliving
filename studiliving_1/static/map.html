@@ -2,67 +2,483 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <title>Immobilienkarte</title>
+  <title>Immobilienkarte | ImmoPlattform</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/static/style.css?v=1">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <style>
     #map {
-      height: 80vh;
+      height: 75vh;
       width: 100%;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-light);
-      margin-top: var(--spacing-md);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-lg);
+      margin-top: var(--space-4);
+      border: 1px solid var(--border-light);
+    }
+    
+    .map-controls {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: var(--space-3);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-light);
+    }
+    
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-1);
+      font-size: var(--text-sm);
+    }
+    
+    .legend-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .legend-marker {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    
+    .legend-marker.available {
+      background: var(--success);
+    }
+    
+    .legend-marker.reserved {
+      background: var(--warning);
+    }
+    
+    .map-container {
+      position: relative;
+    }
+    
+    /* Custom Popup Styles */
+    .leaflet-popup-content-wrapper {
+      border-radius: var(--radius-lg) !important;
+      box-shadow: var(--shadow-xl) !important;
+      border: 1px solid var(--border-light) !important;
+    }
+    
+    .property-popup {
+      min-width: 280px;
+      max-width: 320px;
+    }
+    
+    .popup-image {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: var(--radius) var(--radius) 0 0;
+      margin-bottom: var(--space-3);
+    }
+    
+    .popup-title {
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 0 0 var(--space-2) 0;
+      line-height: 1.3;
+    }
+    
+    .popup-location {
+      color: var(--text-secondary);
+      font-size: var(--text-sm);
+      margin: 0 0 var(--space-3) 0;
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+    
+    .popup-price {
+      font-size: var(--text-xl);
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: var(--space-3);
+    }
+    
+    .popup-features {
+      display: flex;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+    }
+    
+    .popup-features span {
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+      background: var(--bg-secondary);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+    
+    .availability-badge {
+      position: absolute;
+      top: var(--space-2);
+      right: var(--space-2);
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-full);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      color: white;
+    }
+    
+    .availability-badge.available {
+      background: var(--success);
+    }
+    
+    .availability-badge.reserved {
+      background: var(--warning);
+    }
+    
+    @media (max-width: 768px) {
+      #map {
+        height: 60vh;
+      }
+      
+      .map-controls {
+        bottom: 10px;
+        left: 10px;
+        padding: var(--space-2);
+      }
+      
+      .property-popup {
+        min-width: 250px;
+        max-width: 280px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
+ <!-- ===== MODERNIZED HEADER ===== -->
   <header class="header">
-    <div class="container nav">
-      <a href="#" class="logo">ImmoPlattform</a>
-      <ul class="nav-menu">
-        <li><a href="/static/index.html" class="nav-link">Start</a></li>
-        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
-        <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
-        <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
-        <li><a href="/static/map.html" class="nav-link active">Karte</a></li>
-        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
-      </ul>
+    <div class="container">
+      <nav class="nav">
+        <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
+        
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="/static/index.html" class="nav-link active">Start</a></li>
+          <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+          <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
+          <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+          <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+          <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+        </ul>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Menü öffnen">
+          ☰
+        </button>
+      </nav>
     </div>
   </header>
 
   <!-- ===== MAP SECTION ===== -->
   <main class="container content-section">
-    <h2 class="text-2xl font-bold mb-md">Alle Immobilien auf der Karte</h2>
-    <div id="map"></div>
+    
+    <!-- Header mit Stats -->
+    <div class="flex-between mb-lg">
+      <div>
+        <h1 class="text-3xl font-bold mb-sm">Immobilienkarte</h1>
+        <p class="text-secondary">
+          <span id="property-count">0</span> Immobilien • 
+          <span id="filtered-count">0</span> angezeigt
+        </p>
+      </div>
+      <div class="flex" style="gap: var(--space-3);">
+        <button id="center-map" class="btn btn-secondary btn-sm">
+          <i class="fas fa-crosshairs"></i> Zentrieren
+        </button>
+        <button id="toggle-filters" class="btn btn-primary btn-sm">
+          <i class="fas fa-filter"></i> Filter
+        </button>
+      </div>
+    </div>
+
+    <!-- Filter Panel -->
+    <div id="filter-panel" class="filters mb-lg hidden">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4);">
+        
+        <!-- Preisfilter -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-euro-sign"></i> Preis bis
+          </label>
+          <div class="flex" style="gap: var(--space-2); align-items: center;">
+            <input type="range" id="price-filter" class="w-full" min="0" max="3000" value="3000" step="50">
+            <span id="price-display" class="text-sm font-medium">3000€</span>
+          </div>
+        </div>
+
+        <!-- Stadt -->
+        <div class="form-group">
+          <label class="form-label">
+            <i class="fas fa-map-marker-alt"></i> Stadt
+          </label>
+          <select id="city-filter" class="form-select">
+            <option value="">Alle Städte</option>
+          </select>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="form-group" style="display: flex; gap: var(--space-2); align-items: end;">
+          <button id="reset-filters" class="btn btn-secondary btn-sm">
+            <i class="fas fa-undo"></i> Zurücksetzen
+          </button>
+          <button id="apply-filters" class="btn btn-primary btn-sm">
+            <i class="fas fa-search"></i> Anwenden
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="map-container">
+      <div id="map"></div>
+      
+      <!-- Map Legend -->
+      <div class="map-controls">
+        <div class="legend-item">
+          <span class="legend-marker available"></span>
+          <span>Verfügbar</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-marker reserved"></span>
+          <span>Reserviert</span>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- ===== SCRIPTS ===== -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
-    fetch('/properties/public')
-      .then(res => res.json())
-      .then(properties => {
-        const map = L.map('map').setView([51.1657, 10.4515], 6); // Deutschland-Zentrum
+    // Globale Variablen
+    let map;
+    let allProperties = [];
+    let filteredProperties = [];
+    let markersLayer;
+    let currentFilters = {
+      maxPrice: 3000,
+      city: ''
+    };
 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+    // Initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeEventListeners();
+      loadProperties();
+    });
 
-        properties.forEach(p => {
-          if (p.latitude && p.longitude) {
-            L.marker([p.latitude, p.longitude])
-              .addTo(map)
-              .bindPopup(`
-                <strong>${p.name}</strong><br>
-                ${p.stadt}, ${p.plz}<br>
-                ${p.kurzbeschreibung || 'Keine Beschreibung'}
-              `);
-          }
+    // Event Listeners
+    function initializeEventListeners() {
+      document.getElementById('toggle-filters').addEventListener('click', toggleFilters);
+      document.getElementById('price-filter').addEventListener('input', updatePriceDisplay);
+      document.getElementById('apply-filters').addEventListener('click', applyFilters);
+      document.getElementById('reset-filters').addEventListener('click', resetFilters);
+      document.getElementById('center-map').addEventListener('click', centerMapOnGermany);
+    }
+
+    // Properties Loading (Original funktionierender Code)
+    function loadProperties() {
+      fetch('/properties/public')
+        .then(res => res.json())
+        .then(properties => {
+          allProperties = properties.filter(p => p.latitude && p.longitude);
+          filteredProperties = [...allProperties];
+          
+          populateCityFilter();
+          initializeMap();
+          updatePropertyCount();
+        })
+        .catch(error => {
+          console.error('Fehler beim Laden der Properties:', error);
         });
+    }
+
+    // Map Initialization (Basierend auf funktionierendem Code)
+    function initializeMap() {
+      map = L.map('map').setView([51.1657, 10.4515], 6);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Marker Layer erstellen
+      markersLayer = L.layerGroup().addTo(map);
+
+      // Properties anzeigen
+      updateMapMarkers();
+    }
+
+    // Marker Management
+    function updateMapMarkers() {
+      markersLayer.clearLayers();
+
+      filteredProperties.forEach(property => {
+        if (property.latitude && property.longitude) {
+          // Marker Icon basierend auf Verfügbarkeit
+          const iconColor = property.verfuegbar !== false ? '#10b981' : '#f59e0b';
+          
+          const customIcon = L.divIcon({
+            className: 'custom-marker',
+            html: `<div style="
+              width: 25px; 
+              height: 25px; 
+              background-color: ${iconColor}; 
+              border: 2px solid white; 
+              border-radius: 50%; 
+              box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              color: white;
+              font-size: 12px;
+            ">
+              <i class="fas fa-home"></i>
+            </div>`,
+            iconSize: [25, 25],
+            iconAnchor: [12, 12]
+          });
+
+          const marker = L.marker([property.latitude, property.longitude], {
+            icon: customIcon
+          });
+
+          // Enhanced Popup
+          const popupContent = createPopupContent(property);
+          marker.bindPopup(popupContent, {
+            maxWidth: 320,
+            className: 'custom-popup'
+          });
+
+          markersLayer.addLayer(marker);
+        }
       });
+
+      // Map an Marker anpassen
+      if (filteredProperties.length > 0) {
+        const group = new L.featureGroup(markersLayer.getLayers());
+        if (group.getBounds().isValid()) {
+          map.fitBounds(group.getBounds(), { padding: [20, 20] });
+        }
+      }
+    }
+
+    function createPopupContent(property) {
+      return `
+        <div class="property-popup">
+          <div style="position: relative;">
+            <img src="${property.bild_url || '/static/fallback.jpg'}" 
+                 alt="${property.titel}" 
+                 class="popup-image"
+                 onerror="this.src='/static/fallback.jpg'">
+            <span class="availability-badge ${property.verfuegbar !== false ? 'available' : 'reserved'}">
+              ${property.verfuegbar !== false ? 'Verfügbar' : 'Reserviert'}
+            </span>
+          </div>
+          <div style="padding: var(--space-4);">
+            <h4 class="popup-title">${property.titel}</h4>
+            <p class="popup-location">
+              <i class="fas fa-map-marker-alt"></i>
+              ${property.strasse}, ${property.plz} ${property.stadt}
+            </p>
+            <div class="popup-price">${property.kaltmiete.toFixed(0)} € Kaltmiete</div>
+            <div class="popup-features">
+              <span><i class="fas fa-expand-arrows-alt"></i> ${property.wohnflaeche}m²</span>
+              <span><i class="fas fa-bed"></i> ${property.zimmer} Zimmer</span>
+              <span><i class="fas fa-layer-group"></i> ${property.etage || 'EG'}</span>
+            </div>
+            <div style="margin-top: var(--space-3);">
+              <a href="/static/property_detail.html?id=${property.id}" class="btn btn-primary btn-sm w-full">
+                <i class="fas fa-eye"></i> Details ansehen
+              </a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Filter Functions
+    function toggleFilters() {
+      const panel = document.getElementById('filter-panel');
+      const button = document.getElementById('toggle-filters');
+      
+      panel.classList.toggle('hidden');
+      
+      const isVisible = !panel.classList.contains('hidden');
+      button.innerHTML = isVisible ? 
+        '<i class="fas fa-times"></i> Schließen' : 
+        '<i class="fas fa-filter"></i> Filter';
+    }
+
+    function updatePriceDisplay() {
+      const value = document.getElementById('price-filter').value;
+      document.getElementById('price-display').textContent = `${value}€`;
+    }
+
+    function applyFilters() {
+      currentFilters = {
+        maxPrice: parseInt(document.getElementById('price-filter').value),
+        city: document.getElementById('city-filter').value
+      };
+
+      filteredProperties = allProperties.filter(property => {
+        if (property.kaltmiete > currentFilters.maxPrice) return false;
+        if (currentFilters.city && property.stadt !== currentFilters.city) return false;
+        return true;
+      });
+
+      updateMapMarkers();
+      updatePropertyCount();
+    }
+
+    function resetFilters() {
+      document.getElementById('price-filter').value = 3000;
+      document.getElementById('city-filter').value = '';
+      updatePriceDisplay();
+      
+      currentFilters = { maxPrice: 3000, city: '' };
+      filteredProperties = [...allProperties];
+      
+      updateMapMarkers();
+      updatePropertyCount();
+    }
+
+    // Utility Functions
+    function populateCityFilter() {
+      const cities = [...new Set(allProperties.map(p => p.stadt))].sort();
+      const select = document.getElementById('city-filter');
+      
+      cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        option.textContent = city;
+        select.appendChild(option);
+      });
+    }
+
+    function updatePropertyCount() {
+      document.getElementById('property-count').textContent = allProperties.length;
+      document.getElementById('filtered-count').textContent = filteredProperties.length;
+    }
+
+    function centerMapOnGermany() {
+      map.setView([51.1657, 10.4515], 6);
+    }
   </script>
 
 </body>

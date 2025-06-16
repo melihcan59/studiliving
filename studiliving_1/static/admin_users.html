@@ -2,39 +2,510 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Benutzerübersicht</title>
+  <title>Benutzerübersicht - Admin Dashboard</title>
   <link rel="stylesheet" href="/static/style.css?v=1">
 </head>
 <body>
   <header class="header">
-    <div class="container header-inner">
-      <div class="logo">Adminbereich</div>
+    <div class="container nav">
+      <div class="logo">🏠 Admin Dashboard</div>
       <ul class="nav-menu">
-        <li><a href="/static/index.html">Start</a></li>
-        <li><a href="/static/profil.html">Profil</a></li>
-        <li><a href="/static/admin_users.html">Alle Nutzer</a></li>
-        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
+        <li><a href="/static/index.html" class="nav-link">🏠 Start</a></li>
+        <li><a href="/static/profil.html" class="nav-link">👤 Profil</a></li>
+        <li><a href="/static/admin_users.html" class="nav-link active">👥 Alle Nutzer</a></li>
+        <li><a href="/logout" class="nav-link" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">🚪 Logout</a></li>
       </ul>
     </div>
   </header>
-  <main class="container content-section">
-    <h2 class="text-2xl font-bold mb-4">Alle Benutzer</h2>
-    <table class="w-100">
-      <thead>
-        <tr><th>ID</th><th>Benutzername</th><th>Email</th></tr>
-      </thead>
-      <tbody id="userlist"></tbody>
-    </table>
+
+  <main class="container admin-container">
+    <!-- Page Header -->
+    <div class="mb-lg">
+      <h1>👥 Benutzerverwaltung</h1>
+      <p style="color: var(--text-secondary); font-size: var(--text-lg);">Übersicht und Verwaltung aller registrierten Benutzer</p>
+    </div>
+
+    <!-- Admin Statistics -->
+    <div class="admin-stats">
+      <div class="stat-card">
+        <span class="stat-number" id="totalUsers">-</span>
+        <span class="stat-label">👥 Gesamt Nutzer</span>
+      </div>
+      
+      <div class="stat-card">
+        <span class="stat-number" id="activeUsers">-</span>
+        <span class="stat-label">✅ Aktive Nutzer</span>
+      </div>
+      
+      <div class="stat-card">
+        <span class="stat-number" id="newUsersToday">-</span>
+        <span class="stat-label">🆕 Heute neu</span>
+      </div>
+      
+      <div class="stat-card">
+        <span class="stat-number" id="studentsCount">-</span>
+        <span class="stat-label">🎓 Studenten</span>
+      </div>
+    </div>
+
+    <!-- Search and Filter Controls -->
+    <div class="user-controls mb-lg">
+      <div class="search-section">
+        <h3 class="mb-md">🔍 Suche & Filter</h3>
+        
+        <div class="control-row">
+          <div class="search-input-group">
+            <input type="text" id="userSearch" class="form-input" placeholder="🔍 Suche nach Name, Email oder ID...">
+            <button class="btn btn-primary" onclick="searchUsers()">Suchen</button>
+          </div>
+          
+          <div class="filter-group">
+            <select id="userTypeFilter" class="form-select" onchange="filterUsers()">
+              <option value="">👤 Alle Typen</option>
+              <option value="student">🎓 Studenten</option>
+              <option value="berufstaetig">💼 Berufstätige</option>
+              <option value="rentner">👴 Rentner</option>
+              <option value="selbststaendig">🏢 Selbstständige</option>
+            </select>
+            
+            <select id="statusFilter" class="form-select" onchange="filterUsers()">
+              <option value="">📊 Alle Status</option>
+              <option value="active">✅ Aktiv</option>
+              <option value="inactive">❌ Inaktiv</option>
+              <option value="pending">⌛ Ausstehend</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users Data Table -->
+    <div class="data-table">
+      <div class="table-header">
+        <h3 class="mb-md">📋 Benutzerliste</h3>
+        <div class="table-actions">
+          <button class="btn btn-primary" onclick="exportUsers()">📊 Export CSV</button>
+          <button class="btn btn-accent" onclick="refreshUsers()">🔄 Aktualisieren</button>
+        </div>
+      </div>
+      
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortTable('id')" class="sortable">
+              ID <span class="sort-indicator">↕️</span>
+            </th>
+            <th onclick="sortTable('username')" class="sortable">
+              👤 Benutzername <span class="sort-indicator">↕️</span>
+            </th>
+            <th onclick="sortTable('email')" class="sortable">
+              📧 Email <span class="sort-indicator">↕️</span>
+            </th>
+            <th>📱 Typ</th>
+            <th>📅 Registriert</th>
+            <th>📊 Status</th>
+            <th>⚙️ Aktionen</th>
+          </tr>
+        </thead>
+        <tbody id="userlist">
+          <!-- Loading placeholder -->
+          <tr id="loadingRow">
+            <td colspan="7" class="text-center" style="padding: 2rem;">
+              <div class="loading-spinner">⏳ Lade Benutzerdaten...</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="empty-state text-center" style="display: none;">
+      <div style="font-size: 4rem; margin-bottom: 1rem;">👥</div>
+      <h3>Keine Benutzer gefunden</h3>
+      <p style="color: var(--text-secondary);">Es wurden keine Benutzer gefunden, die den aktuellen Filterkriterien entsprechen.</p>
+      <button class="btn btn-primary" onclick="clearFilters()">🔄 Filter zurücksetzen</button>
+    </div>
+
+    <!-- User Actions Modal Placeholder -->
+    <div id="userModal" class="modal-overlay" style="display: none;">
+      <div class="modal">
+        <h3 id="modalTitle">Benutzer bearbeiten</h3>
+        <div id="modalContent"></div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">Abbrechen</button>
+          <button class="btn btn-primary" onclick="saveUserChanges()">Speichern</button>
+        </div>
+      </div>
+    </div>
   </main>
+
   <script>
-    fetch('/users')
-      .then(res => res.json())
-      .then(data => {
-        const table = document.getElementById('userlist');
-        data.forEach(user => {
-          table.innerHTML += `<tr><td>${user.id}</td><td>${user.username}</td><td>${user.email}</td></tr>`;
-        });
+    // Global variables
+    let allUsers = [];
+    let filteredUsers = [];
+    let currentSort = { field: 'id', direction: 'asc' };
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      loadUsers();
+      setupEventListeners();
+    });
+
+    // Event listeners setup
+    function setupEventListeners() {
+      const searchInput = document.getElementById('userSearch');
+      searchInput.addEventListener('input', debounce(searchUsers, 300));
+      
+      // Enter key support for search
+      searchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          searchUsers();
+        }
       });
+    }
+
+    // Load users from API
+    function loadUsers() {
+      fetch('/users')
+        .then(res => res.json())
+        .then(data => {
+          allUsers = data;
+          filteredUsers = [...allUsers];
+          updateStatistics();
+          renderUsers();
+          hideLoading();
+        })
+        .catch(error => {
+          console.error('Fehler beim Laden der Benutzer:', error);
+          showError('Fehler beim Laden der Benutzerdaten');
+        });
+    }
+
+    // Update statistics cards
+    function updateStatistics() {
+      const totalUsers = allUsers.length;
+      const activeUsers = allUsers.filter(u => u.status === 'active' || !u.status).length;
+      const studentsCount = allUsers.filter(u => u.typ === 'student').length;
+      
+      // Simulate new users today (would come from API in real scenario)
+      const newUsersToday = Math.floor(Math.random() * 5);
+      
+      document.getElementById('totalUsers').textContent = totalUsers;
+      document.getElementById('activeUsers').textContent = activeUsers;
+      document.getElementById('newUsersToday').textContent = newUsersToday;
+      document.getElementById('studentsCount').textContent = studentsCount;
+    }
+
+    // Render users table
+    function renderUsers() {
+      const tbody = document.getElementById('userlist');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (filteredUsers.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      tbody.innerHTML = filteredUsers.map(user => `
+        <tr class="user-row" data-user-id="${user.id}">
+          <td><strong>#${user.id}</strong></td>
+          <td>
+            <div class="user-info">
+              <strong>${user.username}</strong>
+              ${user.vorname ? `<br><small style="color: var(--text-secondary);">${user.vorname} ${user.nachname || ''}</small>` : ''}
+            </div>
+          </td>
+          <td>
+            <a href="mailto:${user.email}" style="color: var(--primary);">
+              ${user.email}
+            </a>
+          </td>
+          <td>
+            <span class="user-type-badge">
+              ${getUserTypeIcon(user.typ)} ${getUserTypeLabel(user.typ)}
+            </span>
+          </td>
+          <td>
+            <small style="color: var(--text-secondary);">
+              ${formatDate(user.created_at || new Date())}
+            </small>
+          </td>
+          <td>
+            <span class="status-badge status-${user.status || 'active'}">
+              ${getStatusIcon(user.status)} ${getStatusLabel(user.status)}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <button class="btn btn-sm btn-secondary" onclick="viewUser(${user.id})" title="Details anzeigen">
+                👁️
+              </button>
+              <button class="btn btn-sm btn-primary" onclick="editUser(${user.id})" title="Bearbeiten">
+                ✏️
+              </button>
+              <button class="btn btn-sm btn-danger" onclick="deleteUser(${user.id})" title="Löschen">
+                🗑️
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Search functionality
+    function searchUsers() {
+      const query = document.getElementById('userSearch').value.toLowerCase().trim();
+      
+      if (!query) {
+        filteredUsers = [...allUsers];
+      } else {
+        filteredUsers = allUsers.filter(user => 
+          user.username.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query) ||
+          user.id.toString().includes(query) ||
+          (user.vorname && user.vorname.toLowerCase().includes(query)) ||
+          (user.nachname && user.nachname.toLowerCase().includes(query))
+        );
+      }
+      
+      applyFilters();
+      renderUsers();
+    }
+
+    // Filter functionality
+    function filterUsers() {
+      const typeFilter = document.getElementById('userTypeFilter').value;
+      const statusFilter = document.getElementById('statusFilter').value;
+      
+      let filtered = [...allUsers];
+      
+      // Apply search first
+      const query = document.getElementById('userSearch').value.toLowerCase().trim();
+      if (query) {
+        filtered = filtered.filter(user => 
+          user.username.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query) ||
+          user.id.toString().includes(query)
+        );
+      }
+      
+      // Apply type filter
+      if (typeFilter) {
+        filtered = filtered.filter(user => user.typ === typeFilter);
+      }
+      
+      // Apply status filter
+      if (statusFilter) {
+        filtered = filtered.filter(user => (user.status || 'active') === statusFilter);
+      }
+      
+      filteredUsers = filtered;
+      renderUsers();
+    }
+
+    // Apply current filters
+    function applyFilters() {
+      filterUsers();
+    }
+
+    // Clear all filters
+    function clearFilters() {
+      document.getElementById('userSearch').value = '';
+      document.getElementById('userTypeFilter').value = '';
+      document.getElementById('statusFilter').value = '';
+      filteredUsers = [...allUsers];
+      renderUsers();
+    }
+
+    // Sort table
+    function sortTable(field) {
+      if (currentSort.field === field) {
+        currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        currentSort.field = field;
+        currentSort.direction = 'asc';
+      }
+      
+      filteredUsers.sort((a, b) => {
+        let aVal = a[field];
+        let bVal = b[field];
+        
+        // Handle different data types
+        if (typeof aVal === 'string') {
+          aVal = aVal.toLowerCase();
+          bVal = bVal.toLowerCase();
+        }
+        
+        if (aVal < bVal) return currentSort.direction === 'asc' ? -1 : 1;
+        if (aVal > bVal) return currentSort.direction === 'asc' ? 1 : -1;
+        return 0;
+      });
+      
+      renderUsers();
+      updateSortIndicators();
+    }
+
+    // Update sort indicators
+    function updateSortIndicators() {
+      document.querySelectorAll('.sort-indicator').forEach(indicator => {
+        indicator.textContent = '↕️';
+      });
+      
+      const currentHeader = document.querySelector(`th[onclick="sortTable('${currentSort.field}')"] .sort-indicator`);
+      if (currentHeader) {
+        currentHeader.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+      }
+    }
+
+    // User actions
+    function viewUser(userId) {
+      const user = allUsers.find(u => u.id === userId);
+      if (!user) return;
+      
+      alert(`Benutzer Details:\n\nID: ${user.id}\nName: ${user.username}\nEmail: ${user.email}\nTyp: ${getUserTypeLabel(user.typ)}\nStatus: ${getStatusLabel(user.status)}`);
+    }
+
+    function editUser(userId) {
+      alert(`Bearbeitung für Benutzer ID: ${userId}\n\n(Hier würde ein Bearbeitungsformular geöffnet werden)`);
+    }
+
+    function deleteUser(userId) {
+      const user = allUsers.find(u => u.id === userId);
+      if (!user) return;
+      
+      if (confirm(`Sind Sie sicher, dass Sie den Benutzer "${user.username}" löschen möchten?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)) {
+        // Here you would make an API call to delete the user
+        alert(`Benutzer "${user.username}" würde gelöscht werden.\n\n(API-Aufruf würde hier implementiert werden)`);
+      }
+    }
+
+    // Export functionality
+    function exportUsers() {
+      const csvData = [
+        ['ID', 'Benutzername', 'Email', 'Typ', 'Status', 'Registriert'],
+        ...filteredUsers.map(user => [
+          user.id,
+          user.username,
+          user.email,
+          getUserTypeLabel(user.typ),
+          getStatusLabel(user.status),
+          formatDate(user.created_at || new Date())
+        ])
+      ];
+      
+      const csvContent = csvData.map(row => row.join(',')).join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `benutzer_export_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }
+
+    // Refresh users
+    function refreshUsers() {
+      const refreshBtn = document.querySelector('button[onclick="refreshUsers()"]');
+      refreshBtn.textContent = '⏳ Aktualisiere...';
+      refreshBtn.disabled = true;
+      
+      setTimeout(() => {
+        loadUsers();
+        refreshBtn.textContent = '🔄 Aktualisieren';
+        refreshBtn.disabled = false;
+      }, 1000);
+    }
+
+    // Helper functions
+    function getUserTypeIcon(typ) {
+      const icons = {
+        'student': '🎓',
+        'berufstaetig': '💼',
+        'rentner': '👴',
+        'selbststaendig': '🏢'
+      };
+      return icons[typ] || '👤';
+    }
+
+    function getUserTypeLabel(typ) {
+      const labels = {
+        'student': 'Student',
+        'berufstaetig': 'Berufstätig',
+        'rentner': 'Rentner',
+        'selbststaendig': 'Selbstständig'
+      };
+      return labels[typ] || 'Unbekannt';
+    }
+
+    function getStatusIcon(status) {
+      const icons = {
+        'active': '✅',
+        'inactive': '❌',
+        'pending': '⌛'
+      };
+      return icons[status] || '✅';
+    }
+
+    function getStatusLabel(status) {
+      const labels = {
+        'active': 'Aktiv',
+        'inactive': 'Inaktiv',
+        'pending': 'Ausstehend'
+      };
+      return labels[status] || 'Aktiv';
+    }
+
+    function formatDate(dateString) {
+      if (!dateString) return 'Unbekannt';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('de-DE');
+    }
+
+    function hideLoading() {
+      const loadingRow = document.getElementById('loadingRow');
+      if (loadingRow) {
+        loadingRow.style.display = 'none';
+      }
+    }
+
+    function showError(message) {
+      const tbody = document.getElementById('userlist');
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="7" class="text-center" style="padding: 2rem; color: var(--error);">
+            ❌ ${message}
+          </td>
+        </tr>
+      `;
+    }
+
+    // Debounce function for search
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    // Modal functions (placeholders)
+    function closeModal() {
+      document.getElementById('userModal').style.display = 'none';
+    }
+
+    function saveUserChanges() {
+      alert('Änderungen würden gespeichert werden');
+      closeModal();
+    }
   </script>
 </body>
 </html>

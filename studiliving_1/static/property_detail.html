@@ -2,9 +2,11 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Immobiliendetails</title>
   <link rel="stylesheet" href="/static/style.css?v=1">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 <body>
 
@@ -23,66 +25,422 @@
     </div>
   </header>
 
-  <!-- ===== DETAIL CONTENT ===== -->
-  <main class="container property-detail">
-    <div id="details" class="property-info">
-      <!-- Wird per JS gefüllt -->
+  <!-- ===== BREADCRUMB ===== -->
+  <div class="container mt-md">
+    <div class="breadcrumb">
+      <a href="/static/index.html">Start</a> <i class="fas fa-chevron-right text-xs"></i> <span id="property-title-crumb">Immobiliendetails</span>
     </div>
-    <iframe id="map" class="property-map"></iframe>
+  </div>
+
+  <!-- ===== LOADING STATE ===== -->
+  <div id="loading" class="container mt-lg flex-center">
+    <div class="loading-spinner">
+      <i class="fas fa-circle-notch fa-spin text-2xl"></i>
+      <p class="mt-sm">Immobiliendaten werden geladen...</p>
+    </div>
+  </div>
+
+  <!-- ===== DETAIL CONTENT ===== -->
+  <main id="property-content" class="container property-detail hidden">
+    <!-- Gallery Section -->
+    <div class="property-gallery mb-lg">
+      <div class="gallery-main-container">
+        <div id="gallery-controls" class="gallery-controls">
+          <button id="prev-image" class="gallery-control" aria-label="Vorheriges Bild">
+            <i class="fas fa-chevron-left"></i>
+          </button>
+          <button id="next-image" class="gallery-control" aria-label="Nächstes Bild">
+            <i class="fas fa-chevron-right"></i>
+          </button>
+        </div>
+        <img id="main-image" class="property-main-image" src="" alt="Hauptbild der Immobilie">
+      </div>
+      <div id="thumbnails" class="property-thumbnails"></div>
+    </div>
+
+    <!-- Property Info -->
+    <div class="property-info">
+      <div class="property-description">
+        <div class="property-header mb-md">
+          <div class="property-badge" id="property-type"></div>
+          <h1 id="property-title" class="property-title"></h1>
+          <p id="property-location" class="property-location"></p>
+        </div>
+
+        <div class="property-highlights mb-lg">
+          <div class="highlight-grid">
+            <div class="highlight-item">
+              <i class="fas fa-ruler-combined"></i>
+              <span id="property-area"></span>
+              <small>Wohnfläche</small>
+            </div>
+            <div class="highlight-item">
+              <i class="fas fa-door-open"></i>
+              <span id="property-rooms"></span>
+              <small>Zimmer</small>
+            </div>
+            <div class="highlight-item">
+              <i class="fas fa-building"></i>
+              <span id="property-floor"></span>
+              <small>Etage</small>
+            </div>
+            <div class="highlight-item">
+              <i class="fas fa-calendar-alt"></i>
+              <span id="property-available"></span>
+              <small>Verfügbar ab</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-section mb-lg">
+          <div class="price-container">
+            <div class="price-item">
+              <span class="price-label">Kaltmiete</span>
+              <span id="property-rent-cold" class="property-price"></span>
+            </div>
+            <div class="price-item">
+              <span class="price-label">Warmmiete</span>
+              <span id="property-rent-warm" class="property-price"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="property-section mb-lg">
+          <h3 class="section-title">Details</h3>
+          <ul id="property-specs" class="property-specs"></ul>
+        </div>
+
+        <div class="property-section">
+          <h3 class="section-title">Beschreibung</h3>
+          <div id="property-description" class="property-description-text"></div>
+        </div>
+      </div>
+
+      <div class="property-sidebar">
+        <div class="sidebar-section">
+          <h3 class="section-title mb-sm">Lage</h3>
+          <div id="leafletMap" class="property-map mb-md"></div>
+          <p id="property-address" class="text-center"></p>
+        </div>
+
+        <div class="sidebar-section mt-lg">
+          <h3 class="section-title mb-sm">Kontakt</h3>
+          <div class="contact-info">
+            <p><i class="fas fa-user"></i> <span id="property-owner"></span></p>
+            <button class="btn btn-primary w-full mt-md">
+              <i class="fas fa-envelope"></i> Nachricht senden
+            </button>
+            <button class="btn btn-secondary w-full mt-sm">
+              <i class="fas fa-phone"></i> Anrufen
+            </button>
+          </div>
+        </div>
+
+        <div class="sidebar-section mt-lg">
+          <h3 class="section-title mb-sm">Teilen</h3>
+          <div class="share-buttons">
+            <button class="btn btn-secondary">
+              <i class="fab fa-whatsapp"></i>
+            </button>
+            <button class="btn btn-secondary">
+              <i class="fab fa-facebook"></i>
+            </button>
+            <button class="btn btn-secondary">
+              <i class="fab fa-twitter"></i>
+            </button>
+            <button class="btn btn-secondary">
+              <i class="fas fa-link"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Similar Properties -->
+    <div class="similar-properties mt-lg mb-lg">
+      <h2 class="section-title mb-md">Ähnliche Immobilien</h2>
+      <div id="similar-properties" class="property-grid"></div>
+    </div>
   </main>
+
+  <!-- ===== ERROR STATE ===== -->
+  <div id="error" class="container status-page status-error hidden">
+    <div class="status-icon">
+      <i class="fas fa-exclamation-circle"></i>
+    </div>
+    <h2>Immobilie nicht gefunden</h2>
+    <p>Die gesuchte Immobilie ist nicht verfügbar oder existiert nicht.</p>
+    <a href="/static/index.html" class="btn btn-primary mt-md">
+      Zurück zur Startseite
+    </a>
+  </div>
 
   <!-- ===== SCRIPTS ===== -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
+    // Globale Variablen
     const params = new URLSearchParams(window.location.search);
     const id = params.get("id");
+    let currentImageIndex = 0;
+    let images = [];
+    let allProperties = [];
+    let currentProperty = null;
 
-    fetch(`/properties/public`)
-      .then(res => res.json())
-      .then(data => {
-        const prop = data.find(p => p.id == id);
-        if (!prop) {
-          document.getElementById('details').innerHTML = '<p>Immobilie nicht gefunden.</p>';
-          return;
+    // DOM-Elemente
+    const loadingEl = document.getElementById('loading');
+    const errorEl = document.getElementById('error');
+    const contentEl = document.getElementById('property-content');
+    const mainImageEl = document.getElementById('main-image');
+    const thumbnailsEl = document.getElementById('thumbnails');
+    const prevBtn = document.getElementById('prev-image');
+    const nextBtn = document.getElementById('next-image');
+
+    // Event-Listener
+    document.addEventListener('DOMContentLoaded', init);
+    prevBtn.addEventListener('click', showPreviousImage);
+    nextBtn.addEventListener('click', showNextImage);
+
+    // Initialisierung
+    function init() {
+      showLoading();
+      fetchPropertyData();
+    }
+
+    // Status-Funktionen
+    function showLoading() {
+      loadingEl.classList.remove('hidden');
+      contentEl.classList.add('hidden');
+      errorEl.classList.add('hidden');
+    }
+
+    function showContent() {
+      loadingEl.classList.add('hidden');
+      contentEl.classList.remove('hidden');
+      errorEl.classList.add('hidden');
+    }
+
+    function showError() {
+      loadingEl.classList.add('hidden');
+      contentEl.classList.add('hidden');
+      errorEl.classList.remove('hidden');
+    }
+
+    // Daten laden
+    function fetchPropertyData() {
+      fetch(`/properties/public`)
+        .then(res => {
+          if (!res.ok) throw new Error('Netzwerkfehler');
+          return res.json();
+        })
+        .then(data => {
+          allProperties = data;
+          const prop = data.find(p => p.id == id);
+          
+          if (!prop) {
+            showError();
+            return;
+          }
+
+          currentProperty = prop;
+          setupImageGallery(prop);
+          populatePropertyDetails(prop);
+          setupMap(prop);
+          loadSimilarProperties(prop);
+          showContent();
+        })
+        .catch(err => {
+          console.error('Fehler beim Laden der Immobilie:', err);
+          showError();
+        });
+    }
+
+    // Bildergalerie
+    function setupImageGallery(property) {
+      // In einer realen Anwendung würden wir mehrere Bilder haben
+      // Hier simulieren wir eine Galerie mit dem Hauptbild + Dummybilder
+      const mainImage = property.bild_url || '/static/fallback.jpg';
+      
+      // Simulierte Bildergalerie (in der Realität würden diese vom Server kommen)
+      images = [
+        mainImage,
+        'https://images.unsplash.com/photo-1560185007-5f0bb1866cab',
+        'https://images.unsplash.com/photo-1560185127-6ed189bf02f4',
+        'https://images.unsplash.com/photo-1600607686527-6fb886090705'
+      ];
+
+      // Hauptbild setzen
+      updateMainImage();
+      
+      // Thumbnails generieren
+      thumbnailsEl.innerHTML = '';
+      images.forEach((img, index) => {
+        const thumb = document.createElement('img');
+        thumb.src = img;
+        thumb.alt = `Bild ${index + 1} von ${property.titel}`;
+        thumb.classList.add('property-thumbnail');
+        thumb.dataset.index = index;
+        
+        if (index === currentImageIndex) {
+          thumb.classList.add('active');
         }
-
-        const html = `
-          <div class="property-description">
-            <img src="${prop.bild_url}" alt="${prop.titel}" class="property-main-image" onerror="this.src='/static/fallback.jpg'">
-            <h2 class="property-title">${prop.titel}</h2>
-            <p class="property-location">${prop.strasse}, ${prop.plz} ${prop.stadt}, ${prop.bundesland}</p>
-            <p class="property-price">Kaltmiete: ${prop.kaltmiete.toFixed(2)} €<br>Warmmiete: ${prop.warmmiete.toFixed(2)} €</p>
-            <ul class="property-specs">
-              <li><span>Wohnfläche:</span><span>${prop.wohnflaeche} m²</span></li>
-              <li><span>Zimmer:</span><span>${prop.zimmer}</span></li>
-              <li><span>Etage:</span><span>${prop.etage}</span></li>
-              <li><span>Bezugsfrei ab:</span><span>${prop.bezugsfrei_ab}</span></li>
-              <li><span>Garage / Stellplatz:</span><span>${prop.garage}</span></li>
-              <li><span>Internet:</span><span>${prop.internet}</span></li>
-              <li><span>Ausstattung:</span><span>${prop.ausstattung}</span></li>
-            </ul>
-            <div class="mt-md">
-              <strong>Beschreibung:</strong>
-              <p>${prop.beschreibung}</p>
-            </div>
-          </div>
-          <div class="property-sidebar">
-            <h3 class="mb-sm">Karte</h3>
-            <div id="leafletMap" class="property-map"></div>
-          </div>
-        `;
-
-        document.getElementById('details').innerHTML = html;
-
-        const map = L.map('leafletMap').setView([prop.latitude, prop.longitude], 15);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
-        L.marker([prop.latitude, prop.longitude])
-          .addTo(map)
-          .bindPopup(prop.titel)
-          .openPopup();
+        
+        thumb.addEventListener('click', () => {
+          currentImageIndex = index;
+          updateMainImage();
+        });
+        
+        thumbnailsEl.appendChild(thumb);
       });
+    }
+
+    function updateMainImage() {
+      mainImageEl.src = images[currentImageIndex];
+      mainImageEl.alt = `Bild ${currentImageIndex + 1} von ${currentProperty.titel}`;
+      
+      // Aktiven Thumbnail markieren
+      document.querySelectorAll('.property-thumbnail').forEach((thumb, index) => {
+        if (index === currentImageIndex) {
+          thumb.classList.add('active');
+        } else {
+          thumb.classList.remove('active');
+        }
+      });
+    }
+
+    function showPreviousImage() {
+      currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+      updateMainImage();
+    }
+
+    function showNextImage() {
+      currentImageIndex = (currentImageIndex + 1) % images.length;
+      updateMainImage();
+    }
+
+    // Immobiliendetails befüllen
+    function populatePropertyDetails(property) {
+      // Grundlegende Informationen
+      document.getElementById('property-title').textContent = property.titel;
+      document.getElementById('property-title-crumb').textContent = property.titel;
+      document.getElementById('property-location').textContent = `${property.strasse}, ${property.plz} ${property.stadt}, ${property.bundesland}`;
+      document.getElementById('property-type').textContent = property.typ || 'Wohnung';
+      document.getElementById('property-address').textContent = `${property.strasse}, ${property.plz} ${property.stadt}`;
+      
+      // Highlights
+      document.getElementById('property-area').textContent = `${property.wohnflaeche} m²`;
+      document.getElementById('property-rooms').textContent = property.zimmer;
+      document.getElementById('property-floor').textContent = property.etage || 'EG';
+      document.getElementById('property-available').textContent = property.bezugsfrei_ab || 'Sofort';
+      
+      // Preise
+      document.getElementById('property-rent-cold').textContent = `${property.kaltmiete.toFixed(2)} €`;
+      document.getElementById('property-rent-warm').textContent = `${property.warmmiete.toFixed(2)} €`;
+      
+      // Beschreibung
+      document.getElementById('property-description').textContent = property.beschreibung;
+      
+      // Specs / Eigenschaften
+      const specsList = document.getElementById('property-specs');
+      specsList.innerHTML = '';
+      
+      const specs = [
+        { label: 'Wohnfläche', value: `${property.wohnflaeche} m²` },
+        { label: 'Zimmer', value: property.zimmer },
+        { label: 'Etage', value: property.etage || 'EG' },
+        { label: 'Bezugsfrei ab', value: property.bezugsfrei_ab || 'Sofort' },
+        { label: 'Garage / Stellplatz', value: property.garage || 'Nicht vorhanden' },
+        { label: 'Internet', value: property.internet || 'Verfügbar' },
+        { label: 'Ausstattung', value: property.ausstattung || 'Standard' }
+      ];
+      
+      specs.forEach(spec => {
+        const li = document.createElement('li');
+        li.innerHTML = `<span>${spec.label}:</span><span>${spec.value}</span>`;
+        specsList.appendChild(li);
+      });
+      
+      // Besitzer (falls vorhanden)
+      if (property.owner_name) {
+        document.getElementById('property-owner').textContent = property.owner_name;
+      } else {
+        document.getElementById('property-owner').textContent = 'ImmoPlattform Makler';
+      }
+    }
+
+    // Karte einrichten
+    function setupMap(property) {
+      const map = L.map('leafletMap').setView([property.latitude, property.longitude], 15);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+      
+      const marker = L.marker([property.latitude, property.longitude])
+        .addTo(map)
+        .bindPopup(`<strong>${property.titel}</strong><br>${property.strasse}, ${property.plz} ${property.stadt}`)
+        .openPopup();
+        
+      // Karte aktualisieren, um sicherzustellen, dass sie korrekt gerendert wird
+      setTimeout(() => {
+        map.invalidateSize();
+      }, 100);
+    }
+
+    // Ähnliche Immobilien laden
+    function loadSimilarProperties(currentProp) {
+      const similarProps = allProperties
+        .filter(p => p.id != currentProp.id) // Aktuelle Immobilie ausschließen
+        .filter(p => p.bundesland === currentProp.bundesland) // Gleicher Bundesland
+        .slice(0, 3); // Maximal 3 anzeigen
+      
+      const similarContainer = document.getElementById('similar-properties');
+      similarContainer.innerHTML = '';
+      
+      if (similarProps.length === 0) {
+        document.querySelector('.similar-properties').classList.add('hidden');
+        return;
+      }
+      
+      similarProps.forEach(prop => {
+        const card = createPropertyCard(prop);
+        similarContainer.appendChild(card);
+      });
+    }
+
+    // Immobilienkarte erstellen
+    function createPropertyCard(property) {
+      const card = document.createElement('div');
+      card.classList.add('property-card');
+      
+      card.innerHTML = `
+        <img src="${property.bild_url || '/static/fallback.jpg'}" alt="${property.titel}" class="property-image">
+        <div class="property-content">
+          <h3 class="property-title">${property.titel}</h3>
+          <p class="property-location">${property.stadt}, ${property.bundesland}</p>
+          <p class="property-price">${property.kaltmiete.toFixed(2)} €</p>
+          <div class="property-features">
+            <span class="property-feature">${property.wohnflaeche} m²</span>
+            <span class="property-feature">${property.zimmer} Zimmer</span>
+          </div>
+        </div>
+        <div class="property-actions">
+          <a href="/static/property_detail.html?id=${property.id}" class="btn btn-primary">
+            Details ansehen
+          </a>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // Tastaturnavigation für die Galerie
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        showPreviousImage();
+      } else if (e.key === 'ArrowRight') {
+        showNextImage();
+      }
+    });
   </script>
 
 </body>

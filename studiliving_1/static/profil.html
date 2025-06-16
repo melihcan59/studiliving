@@ -2,51 +2,226 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Profil bearbeiten</title>
-  <link rel="stylesheet" href="/static/style.css?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profil bearbeiten – ImmoPlattform</title>
+  <link rel="stylesheet" href="/static/style.css?v=2">
+  <!-- Autor: Dennis | Modernisierte Profil-Seite -->
 </head>
 <body>
+
+  <!-- ===== MODERNIZED HEADER ===== -->
   <header class="header">
-    <div class="container header-inner">
-      <div class="logo">ImmoPlattform</div>
-      <ul class="nav-menu">
-        <li><a href="/static/index.html">Start</a></li>
-        <li><a href="/static/profil.html">Profil</a></li>
-        <li><a href="/static/my_properties.html">Meine Immobilien</a></li>
-        <li><a href="/static/create_property.html">Neue Immobilie</a></li>
-        <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
-      </ul>
+    <div class="container">
+      <nav class="nav">
+        <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
+        
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="/static/index.html" class="nav-link">Start</a></li>
+          <li><a href="/static/profil.html" class="nav-link active">Profil</a></li>
+          <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
+          <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+          <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+          <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+        </ul>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Menü öffnen">
+          ☰
+        </button>
+      </nav>
     </div>
   </header>
-  <main class="auth-form">
-    <h2 class="auth-form-title">Profil bearbeiten</h2>
-    <form action="/profil/update" method="post">
-      <div class="form-group">
-        <label class="form-label">Typ</label>
-        <input class="form-control" name="typ">
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="content-section">
+    <div class="container" style="max-width: 600px;">
+      
+      <!-- Page Header -->
+      <div class="text-center mb-lg">
+        <h1 class="text-3xl font-bold mb-md">👤 Profil bearbeiten</h1>
+        <p style="color: #64748b; font-size: 1.125rem;">
+          Verwalten Sie Ihre persönlichen Informationen und Präferenzen
+        </p>
       </div>
-      <div class="form-group">
-        <label class="form-label">Alter</label>
-        <input class="form-control" type="number" name="alter">
+
+      <!-- Profile Form Card -->
+      <div class="form">
+        <form action="/profil/update" method="post">
+          
+          <!-- Persönliche Informationen Section -->
+          <div style="margin-bottom: 2rem;">
+            <h3 style="color: #3b82f6; font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              ℹ️ Persönliche Informationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+              <div class="form-group">
+                <label class="form-label">👤 Typ</label>
+                <select name="typ" class="form-select">
+                  <option value="">Bitte wählen</option>
+                  <option value="student">Student</option>
+                  <option value="berufstaetig">Berufstätig</option>
+                  <option value="rentner">Rentner</option>
+                  <option value="selbststaendig">Selbstständig</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">🎂 Alter</label>
+                <input class="form-input" type="number" name="alter" min="18" max="120" placeholder="z.B. 25">
+              </div>
+            </div>
+          </div>
+
+          <!-- Adressinformationen Section -->
+          <div style="margin-bottom: 2rem;">
+            <h3 style="color: #3b82f6; font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              📍 Adressinformationen
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+              <div class="form-group">
+                <label class="form-label">🏙️ Stadt</label>
+                <input class="form-input" name="stadt" placeholder="z.B. München">
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">📫 PLZ</label>
+                <input class="form-input" name="plz" placeholder="80331">
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label class="form-label">🌍 Land</label>
+              <select name="land" class="form-select">
+                <option value="">Bitte wählen</option>
+                <option value="Deutschland" selected>Deutschland</option>
+                <option value="Österreich">Österreich</option>
+                <option value="Schweiz">Schweiz</option>
+                <option value="Andere">Andere</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Über mich Section -->
+          <div style="margin-bottom: 2rem;">
+            <h3 style="color: #3b82f6; font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+              💭 Über mich
+            </h3>
+            
+            <div class="form-group">
+              <label class="form-label">📝 Beschreibung</label>
+              <textarea 
+                class="form-textarea" 
+                name="ueber_mich" 
+                rows="4" 
+                placeholder="Erzählen Sie etwas über sich... (z.B. Hobbys, Beruf, was Sie bei einer Wohnung wichtig finden)"
+                style="min-height: 100px;"
+              ></textarea>
+              <small style="color: #64748b; font-size: 0.875rem;">
+                💡 Tipp: Eine aussagekräftige Beschreibung hilft Vermietern, Sie besser kennenzulernen
+              </small>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+            <button type="button" class="btn btn-secondary" onclick="window.history.back()">
+              ← Zurück
+            </button>
+            <button type="submit" class="btn btn-primary btn-lg">
+              💾 Profil speichern
+            </button>
+          </div>
+        </form>
       </div>
-      <div class="form-group">
-        <label class="form-label">Stadt</label>
-        <input class="form-control" name="stadt">
+
+      <!-- Help Section -->
+      <div style="background: #f1f5f9; padding: 1.5rem; border-radius: 1rem; margin-top: 2rem; text-align: center;">
+        <h4 style="color: #3b82f6; margin-bottom: 0.5rem;">❓ Brauchen Sie Hilfe?</h4>
+        <p style="color: #64748b; font-size: 0.875rem; margin: 0;">
+          Ein vollständiges Profil erhöht Ihre Chancen bei Vermietern erheblich!
+        </p>
       </div>
-      <div class="form-group">
-        <label class="form-label">PLZ</label>
-        <input class="form-control" name="plz">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Land</label>
-        <input class="form-control" name="land">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Über mich</label>
-        <textarea class="form-control" name="ueber_mich"></textarea>
-      </div>
-      <button class="btn btn-primary btn-block" type="submit">Speichern</button>
-    </form>
+
+    </div>
   </main>
+
+  <!-- ===== ENHANCED JAVASCRIPT ===== -->
+  <script>
+    // ===== MOBILE MENU FUNCTIONALITY =====
+    // Autor: Dennis | Mobile Navigation
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileToggle = document.getElementById('mobileToggle');
+      const navMenu = document.getElementById('navMenu');
+      
+      mobileToggle?.addEventListener('click', () => {
+        navMenu.classList.toggle('show');
+      });
+    });
+
+    // ===== FORM ENHANCEMENT =====
+    // Auto-Save Draft (Optional - kann später erweitert werden)
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, select, textarea');
+    
+    // Form Validation Enhancement
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      const requiredFields = ['typ', 'stadt'];
+      
+      requiredFields.forEach(fieldName => {
+        const field = form.querySelector(`[name="${fieldName}"]`);
+        if (field && !field.value.trim()) {
+          field.style.borderColor = '#ef4444';
+          isValid = false;
+        } else if (field) {
+          field.style.borderColor = '#e2e8f0';
+        }
+      });
+      
+      if (!isValid) {
+        e.preventDefault();
+        alert('Bitte füllen Sie alle Pflichtfelder aus (Typ und Stadt).');
+      }
+    });
+
+    // ===== SUCCESS FEEDBACK =====
+    // Check if we came from a successful update
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('success') === '1') {
+      // Show success message
+      const successDiv = document.createElement('div');
+      successDiv.innerHTML = `
+        <div style="background: #dcfce7; border: 1px solid #16a34a; color: #166534; padding: 1rem; border-radius: 0.5rem; margin-bottom: 1rem; text-align: center;">
+          ✅ Profil erfolgreich aktualisiert!
+        </div>
+      `;
+      document.querySelector('.form').insertBefore(successDiv.firstElementChild, document.querySelector('form'));
+      
+      // Remove success parameter from URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    // ===== AUTO-CAPITALIZE CITY NAMES =====
+    const stadtInput = document.querySelector('[name="stadt"]');
+    stadtInput?.addEventListener('blur', function() {
+      if (this.value) {
+        // Capitalize first letter of each word
+        this.value = this.value.toLowerCase()
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ');
+      }
+    });
+
+    // ===== PLZ VALIDATION =====
+    const plzInput = document.querySelector('[name="plz"]');
+    plzInput?.addEventListener('input', function() {
+      // Only allow numbers and limit to 5 digits for German postal codes
+      this.value = this.value.replace(/\D/g, '').substring(0, 5);
+    });
+  </script>
+
 </body>
 </html>

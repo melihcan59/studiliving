@@ -2,26 +2,402 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Aktualisiert</title>
+  <title>Aktualisiert - ImmoPlattform</title>
   <link rel="stylesheet" href="/static/style.css?v=1">
+  <style>
+    /* Status Page Styling */
+    .status-container {
+      min-height: calc(100vh - var(--header-height));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-8) var(--space-4);
+      background: linear-gradient(135deg, 
+        rgba(59, 130, 246, 0.05) 0%, 
+        rgba(168, 85, 247, 0.05) 100%);
+    }
+
+    .status-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-12) var(--space-8);
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.05);
+      position: relative;
+      overflow: hidden;
+      animation: slideInScale 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .status-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, #a855f7 100%);
+    }
+
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--space-6);
+      background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      animation: rotateScale 1.5s ease-in-out infinite;
+      position: relative;
+    }
+
+    .status-icon::after {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      border-radius: var(--radius-full);
+      background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+      opacity: 0.15;
+      z-index: -1;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-title {
+      font-size: var(--text-3xl);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+      line-height: 1.2;
+    }
+
+    .status-message {
+      font-size: var(--text-lg);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-6);
+      line-height: 1.6;
+    }
+
+    .update-details {
+      background: rgba(59, 130, 246, 0.05);
+      border: 1px solid rgba(59, 130, 246, 0.1);
+      border-radius: var(--radius);
+      padding: var(--space-4);
+      margin-bottom: var(--space-8);
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+    }
+
+    .update-details .icon {
+      width: 20px;
+      height: 20px;
+      background: var(--primary);
+      border-radius: var(--radius-full);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .status-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, #a855f7 100%);
+      color: white;
+      border: none;
+      padding: var(--space-4) var(--space-8);
+      border-radius: var(--radius);
+      font-size: var(--text-base);
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      transition: all var(--transition);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 2px solid var(--border);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      transition: all var(--transition);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      padding: var(--space-3) var(--space-6);
+      border-radius: var(--radius);
+      font-size: var(--text-sm);
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      transition: all var(--transition);
+    }
+
+    .btn-outline:hover {
+      background: var(--primary);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .action-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-3);
+      margin-top: var(--space-4);
+    }
+
+    /* Animations */
+    @keyframes slideInScale {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes rotateScale {
+      0%, 100% {
+        transform: rotate(0deg) scale(1);
+      }
+      25% {
+        transform: rotate(5deg) scale(1.05);
+      }
+      75% {
+        transform: rotate(-5deg) scale(1.05);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        opacity: 0.15;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.3;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .status-container {
+        padding: var(--space-4);
+      }
+
+      .status-card {
+        padding: var(--space-8) var(--space-6);
+      }
+
+      .status-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 2rem;
+      }
+
+      .status-title {
+        font-size: var(--text-2xl);
+      }
+
+      .status-message {
+        font-size: var(--text-base);
+      }
+
+      .action-group {
+        grid-template-columns: 1fr;
+        gap: var(--space-3);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .status-card {
+        padding: var(--space-6) var(--space-4);
+      }
+
+      .status-actions {
+        gap: var(--space-3);
+      }
+
+      .update-details {
+        flex-direction: column;
+        text-align: center;
+        gap: var(--space-2);
+      }
+    }
+  </style>
 </head>
 <body>
 
   <!-- ===== HEADER ===== -->
   <header class="header">
     <div class="container nav">
-      <a href="#" class="logo">ImmoPlattform</a>
+      <a href="/static/index.html" class="logo">ImmoPlattform</a>
     </div>
   </header>
 
-  <!-- ===== STATUS MESSAGE ===== -->
-  <main class="status-page status-success">
-    <div class="status-icon">✅</div>
-    <h1 class="text-2xl font-bold mb-md">Immobilie erfolgreich aktualisiert!</h1>
-    <p class="mb-md">Die Änderungen wurden gespeichert.</p>
-    <a href="/static/index.html" class="btn btn-primary">Zurück zur Startseite</a>
+  <!-- ===== UPDATE SUCCESS MESSAGE ===== -->
+  <main class="status-container">
+    <div class="status-card">
+      <div class="status-icon">
+        🔄
+      </div>
+      
+      <h1 class="status-title">
+        Immobilie erfolgreich aktualisiert!
+      </h1>
+      
+      <p class="status-message">
+        Alle Änderungen wurden erfolgreich gespeichert und sind sofort sichtbar.
+      </p>
+
+      <div class="update-details">
+        <div class="icon">ℹ</div>
+        <div>
+          <strong>Letzte Aktualisierung:</strong> <span id="currentTime"></span><br>
+          Die Änderungen sind sofort online verfügbar.
+        </div>
+      </div>
+      
+      <div class="status-actions">
+        <a href="/static/index.html" class="btn-primary">
+          <span>🏠</span>
+          Zurück zur Startseite
+        </a>
+        
+        <div class="action-group">
+          <a href="/static/my_properties.html" class="btn-outline">
+            <span>📋</span>
+            Meine Immobilien
+          </a>
+          <a href="/static/property_detail.html" class="btn-secondary" id="viewProperty">
+            <span>👁</span>
+            Anzeigen
+          </a>
+        </div>
+      </div>
+    </div>
   </main>
+
+  <script>
+    // Aktuelle Zeit setzen
+    document.addEventListener('DOMContentLoaded', function() {
+      const now = new Date();
+      const timeString = now.toLocaleString('de-DE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      document.getElementById('currentTime').textContent = timeString;
+
+      // Property ID aus URL Parameter für "Anzeigen" Button
+      const params = new URLSearchParams(window.location.search);
+      const propertyId = params.get('id');
+      if (propertyId) {
+        const viewButton = document.getElementById('viewProperty');
+        viewButton.href = `/static/property_detail.html?id=${propertyId}`;
+      }
+
+      // Smooth Update Animation
+      setTimeout(() => {
+        createUpdateParticles();
+      }, 500);
+    });
+
+    function createUpdateParticles() {
+      const colors = ['#3b82f6', '#a855f7', '#06d6a0'];
+      const particleCount = 25;
+      
+      for (let i = 0; i < particleCount; i++) {
+        setTimeout(() => {
+          const particle = document.createElement('div');
+          particle.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 6px;
+            height: 6px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+            animation: updateBurst 1.5s ease-out forwards;
+          `;
+          
+          document.body.appendChild(particle);
+          
+          setTimeout(() => {
+            particle.remove();
+          }, 1500);
+        }, i * 30);
+      }
+    }
+
+    // CSS für Update-Burst Animation hinzufügen
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes updateBurst {
+        0% {
+          transform: translate(-50%, -50%) scale(0);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(${-50 + (Math.random() - 0.5) * 400}%, ${-50 + (Math.random() - 0.5) * 400}%) scale(1);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
 
 </body>
 </html>
-

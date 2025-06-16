@@ -2,58 +2,392 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Meine Immobilien</title>
-  <link rel="stylesheet" href="/static/style.css?v=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meine Immobilien – ImmoPlattform</title>
+  <link rel="stylesheet" href="/static/style.css?v=2">
+  <!-- Autor: Dennis | Modernisierte Immobilien-Verwaltung -->
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
+  <!-- ===== MODERNIZED HEADER ===== -->
   <header class="header">
-    <div class="container nav">
-      <a href="#" class="logo">ImmoPlattform</a>
-      <ul class="nav-menu">
-        <li><a href="/static/index.html" class="nav-link">Start</a></li>
-        <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
-        <li><a href="/static/my_properties.html" class="nav-link active">Meine Immobilien</a></li>
-        <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
-        <li><a href="/static/map.html" class="nav-link">Karte</a></li>
-        <li><a href="/logout" class="nav-link" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">Logout</a></li>
-      </ul>
+    <div class="container">
+      <nav class="nav">
+        <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
+        
+        <ul class="nav-menu" id="navMenu">
+          <li><a href="/static/index.html" class="nav-link">Start</a></li>
+          <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
+          <li><a href="/static/my_properties.html" class="nav-link active">Meine Immobilien</a></li>
+          <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
+          <li><a href="/static/map.html" class="nav-link">Karte</a></li>
+          <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
+        </ul>
+
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Menü öffnen">
+          ☰
+        </button>
+      </nav>
     </div>
   </header>
 
-  <!-- ===== CONTENT ===== -->
-  <main class="container content-section">
-    <h2 class="text-2xl font-bold mb-md">Meine Immobilien</h2>
-    <div id="properties" class="property-grid"></div>
+  <!-- ===== MAIN CONTENT ===== -->
+  <main class="content-section">
+    <div class="container">
+      
+      <!-- Page Header -->
+      <div class="flex-between mb-lg">
+        <div>
+          <h1 class="text-3xl font-bold mb-sm">🏘️ Meine Immobilien</h1>
+          <p style="color: #64748b; font-size: 1.125rem; margin: 0;">
+            Verwalten Sie Ihre Immobilienanzeigen und behalten Sie den Überblick
+          </p>
+        </div>
+        <div>
+          <a href="/static/create_property.html" class="btn btn-primary btn-lg">
+            ➕ Neue Immobilie
+          </a>
+        </div>
+      </div>
+
+      <!-- Stats Overview -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+        <div style="background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700;" id="totalMyProperties">-</div>
+          <div style="font-size: 0.875rem; opacity: 0.9;">Gesamt Immobilien</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700;" id="activeProperties">-</div>
+          <div style="font-size: 0.875rem; opacity: 0.9;">Aktive Anzeigen</div>
+        </div>
+        <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 1.5rem; border-radius: 1rem; text-align: center;">
+          <div style="font-size: 2rem; font-weight: 700;" id="avgPrice">-</div>
+          <div style="font-size: 0.875rem; opacity: 0.9;">Ø Miete</div>
+        </div>
+      </div>
+
+      <!-- Filter and Actions Bar -->
+      <div class="filters" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <select id="sortFilter" class="form-select" style="width: auto; min-width: 150px;">
+            <option value="newest">🕒 Neueste zuerst</option>
+            <option value="oldest">🕐 Älteste zuerst</option>
+            <option value="price-high">💰 Höchste Miete</option>
+            <option value="price-low">💸 Niedrigste Miete</option>
+            <option value="title">📝 Alphabetisch</option>
+          </select>
+          
+          <div style="display: flex; gap: 0.5rem;">
+            <button id="gridView" class="btn btn-secondary btn-sm" onclick="switchView('grid')">
+              📱 Karten
+            </button>
+            <button id="listView" class="btn btn-secondary btn-sm" onclick="switchView('list')">
+              📋 Liste
+            </button>
+          </div>
+        </div>
+        
+        <div style="color: #64748b; font-size: 0.875rem;">
+          <span id="propertyCount">0</span> Immobilien gefunden
+        </div>
+      </div>
+
+      <!-- Properties Container -->
+      <section>
+        <!-- Loading State -->
+        <div id="loadingState" style="text-align: center; padding: 3rem;">
+          <div style="display: inline-block; width: 40px; height: 40px; border: 4px solid #f1f5f9; border-top: 4px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+          <p style="margin-top: 1rem; color: #64748b;">Immobilien werden geladen...</p>
+        </div>
+
+        <!-- Properties Grid/List -->
+        <div class="property-grid" id="properties">
+          <!-- Properties werden hier per JavaScript eingefügt -->
+        </div>
+        
+        <!-- Empty State -->
+        <div id="emptyState" style="display: none; text-align: center; padding: 3rem;">
+          <div style="font-size: 4rem; margin-bottom: 1rem;">🏠</div>
+          <h3>Noch keine Immobilien</h3>
+          <p style="color: #64748b; margin-bottom: 2rem;">
+            Sie haben noch keine Immobilien erstellt. Erstellen Sie Ihre erste Anzeige!
+          </p>
+          <a href="/static/create_property.html" class="btn btn-primary btn-lg">
+            ➕ Erste Immobilie erstellen
+          </a>
+        </div>
+      </section>
+
+    </div>
   </main>
 
-  <!-- ===== SCRIPT ===== -->
+  <!-- ===== ENHANCED JAVASCRIPT ===== -->
   <script>
-    fetch('/properties')
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById('properties');
-        data.forEach(p => {
-          container.innerHTML += `
-            <div class="property-card">
-              <img src="${p.bild_url}" alt="${p.titel}" class="property-image" onerror="this.src='/static/fallback.jpg'">
-              <div class="property-content">
-                <h3 class="property-title">${p.titel}</h3>
-                <p class="property-price">${p.kaltmiete.toFixed(2)} € Kaltmiete</p>
-                <p class="property-location">${p.stadt}, ${p.plz}</p>
-                <div class="property-features">
-                  <span class="property-feature">${p.wohnflaeche} m²</span>
-                  <span class="property-feature">${p.zimmer} Zi.</span>
-                </div>
-                <div class="property-actions">
-                  <a class="btn btn-secondary btn-sm" href="/static/edit_property.html?id=${p.id}">Bearbeiten</a>
-                  <a class="btn btn-danger btn-sm" href="/static/confirm_delete.html?id=${p.id}">Löschen</a>
-                </div>
-              </div>
-            </div>`;
-        });
+    // ===== GLOBALE VARIABLEN =====
+    // Autor: Dennis | Immobilien-Verwaltung
+    let allMyProperties = [];
+    let currentView = 'grid';
+
+    // ===== DOM LOAD EVENT =====
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeMyProperties();
+    });
+
+    // ===== APP INITIALISIERUNG =====
+    function initializeMyProperties() {
+      setupEventListeners();
+      loadMyProperties();
+    }
+
+    // ===== EVENT LISTENERS =====
+    function setupEventListeners() {
+      // Mobile Menu
+      const mobileToggle = document.getElementById('mobileToggle');
+      const navMenu = document.getElementById('navMenu');
+      
+      mobileToggle?.addEventListener('click', () => {
+        navMenu.classList.toggle('show');
       });
+
+      // Sort Filter
+      const sortFilter = document.getElementById('sortFilter');
+      sortFilter?.addEventListener('change', () => {
+        sortProperties(sortFilter.value);
+      });
+    }
+
+    // ===== PROPERTIES LADEN =====
+    function loadMyProperties() {
+      const loadingState = document.getElementById('loadingState');
+      
+      loadingState.style.display = 'block';
+      
+      fetch('/properties')
+        .then(res => res.json())
+        .then(data => {
+          allMyProperties = data;
+          updateStats();
+          renderProperties(allMyProperties);
+          loadingState.style.display = 'none';
+        })
+        .catch(error => {
+          console.error('Fehler beim Laden:', error);
+          loadingState.innerHTML = '<p style="color: #ef4444;">❌ Fehler beim Laden der Immobilien</p>';
+        });
+    }
+
+    // ===== STATISTICS UPDATE =====
+    function updateStats() {
+      const total = allMyProperties.length;
+      const active = allMyProperties.length; // Alle sind aktiv in diesem System
+      const avgPrice = total > 0 
+        ? Math.round(allMyProperties.reduce((sum, prop) => sum + prop.kaltmiete, 0) / total)
+        : 0;
+
+      document.getElementById('totalMyProperties').textContent = total;
+      document.getElementById('activeProperties').textContent = active;
+      document.getElementById('avgPrice').textContent = avgPrice > 0 ? avgPrice + ' €' : '-';
+      document.getElementById('propertyCount').textContent = total;
+    }
+
+    // ===== PROPERTIES RENDERN =====
+    function renderProperties(properties) {
+      const container = document.getElementById('properties');
+      const emptyState = document.getElementById('emptyState');
+      
+      if (properties.length === 0) {
+        container.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      container.style.display = 'grid';
+      emptyState.style.display = 'none';
+      container.innerHTML = '';
+      
+      properties.forEach(property => {
+        const card = createPropertyCard(property);
+        container.appendChild(card);
+      });
+    }
+
+    // ===== PROPERTY CARD ERSTELLEN =====
+    function createPropertyCard(property) {
+      const card = document.createElement('div');
+      card.className = 'property-card';
+      
+      // Status Badge
+      const statusBadge = `
+        <div style="position: absolute; top: 1rem; right: 1rem; background: #10b981; color: white; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; z-index: 10;">
+          ✅ Aktiv
+        </div>
+      `;
+      
+      card.innerHTML = `
+        <div style="position: relative;">
+          <img 
+            src="${property.bild_url || '/static/fallback.jpg'}" 
+            alt="${property.titel}" 
+            class="property-image"
+            onerror="this.src='/static/fallback.jpg'"
+          >
+          ${statusBadge}
+        </div>
+        
+        <div class="property-content">
+          <h3 class="property-title">${property.titel}</h3>
+          
+          <p class="property-location">📍 ${property.stadt}, ${property.plz}</p>
+          
+          <div class="property-features">
+            <span class="property-feature">📐 ${property.wohnflaeche} m²</span>
+            <span class="property-feature">🏠 ${property.zimmer} Zi.</span>
+            <span class="property-feature">🏢 ${property.etage || 'N/A'}</span>
+          </div>
+          
+          <p class="property-price">${property.kaltmiete.toFixed(0)} € <small style="font-weight: normal; color: #64748b;">Kaltmiete</small></p>
+          
+          <!-- Quick Stats -->
+          <div style="display: flex; justify-content: space-between; padding: 0.75rem; background: #f8fafc; border-radius: 0.5rem; margin-top: 1rem; font-size: 0.875rem;">
+            <span style="color: #64748b;">Erstellt: <strong>${formatDate(property.id)}</strong></span>
+            <span style="color: #10b981;">👁️ <strong>Aktiv</strong></span>
+          </div>
+        </div>
+        
+        <div class="property-actions">
+          <a href="/static/property_detail.html?id=${property.id}" class="btn btn-secondary btn-sm">
+            👁️ Ansehen
+          </a>
+          <a href="/static/edit_property.html?id=${property.id}" class="btn btn-primary btn-sm">
+            ✏️ Bearbeiten
+          </a>
+          <button onclick="confirmDelete(${property.id}, '${property.titel}')" class="btn btn-danger btn-sm">
+            🗑️ Löschen
+          </button>
+        </div>
+      `;
+      
+      return card;
+    }
+
+    // ===== SORTIERUNG =====
+    function sortProperties(sortType) {
+      let sorted = [...allMyProperties];
+      
+      switch(sortType) {
+        case 'newest':
+          sorted.sort((a, b) => b.id - a.id);
+          break;
+        case 'oldest':
+          sorted.sort((a, b) => a.id - b.id);
+          break;
+        case 'price-high':
+          sorted.sort((a, b) => b.kaltmiete - a.kaltmiete);
+          break;
+        case 'price-low':
+          sorted.sort((a, b) => a.kaltmiete - b.kaltmiete);
+          break;
+        case 'title':
+          sorted.sort((a, b) => a.titel.localeCompare(b.titel));
+          break;
+      }
+      
+      renderProperties(sorted);
+    }
+
+    // ===== VIEW SWITCHER =====
+    function switchView(view) {
+      currentView = view;
+      const container = document.getElementById('properties');
+      const gridBtn = document.getElementById('gridView');
+      const listBtn = document.getElementById('listView');
+      
+      if (view === 'grid') {
+        container.className = 'property-grid';
+        gridBtn.classList.add('btn-primary');
+        gridBtn.classList.remove('btn-secondary');
+        listBtn.classList.add('btn-secondary');
+        listBtn.classList.remove('btn-primary');
+      } else {
+        container.className = 'property-list';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '1rem';
+        listBtn.classList.add('btn-primary');
+        listBtn.classList.remove('btn-secondary');
+        gridBtn.classList.add('btn-secondary');
+        gridBtn.classList.remove('btn-primary');
+      }
+    }
+
+    // ===== DELETE CONFIRMATION =====
+    function confirmDelete(propertyId, propertyTitle) {
+      if (confirm(`Möchten Sie "${propertyTitle}" wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)) {
+        deleteProperty(propertyId);
+      }
+    }
+
+    function deleteProperty(propertyId) {
+      fetch(`/properties/${propertyId}`, {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (response.ok) {
+          // Remove from local array
+          allMyProperties = allMyProperties.filter(p => p.id !== propertyId);
+          updateStats();
+          renderProperties(allMyProperties);
+          
+          // Show success message
+          showMessage('✅ Immobilie erfolgreich gelöscht!', 'success');
+        } else {
+          throw new Error('Löschung fehlgeschlagen');
+        }
+      })
+      .catch(error => {
+        console.error('Fehler beim Löschen:', error);
+        showMessage('❌ Fehler beim Löschen der Immobilie', 'error');
+      });
+    }
+
+    // ===== UTILITY FUNCTIONS =====
+    function formatDate(id) {
+      // Simple date formatting based on ID (fallback)
+      return `ID ${id}`;
+    }
+
+    function showMessage(message, type) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style.cssText = `
+        position: fixed; top: 1rem; right: 1rem; z-index: 9999;
+        padding: 1rem 1.5rem; border-radius: 0.5rem; color: white;
+        background: ${type === 'success' ? '#10b981' : '#ef4444'};
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        animation: slideIn 0.3s ease;
+      `;
+      messageDiv.textContent = message;
+      
+      document.body.appendChild(messageDiv);
+      
+      setTimeout(() => {
+        messageDiv.remove();
+      }, 3000);
+    }
+
+    // ===== LOADING ANIMATION =====
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      @keyframes slideIn {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 
 </body>
