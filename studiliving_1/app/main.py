@@ -179,3 +179,17 @@ def root():
 
 if __name__ == "__main__":
     uvicorn.run("main:app", reload=True)
+
+@app.get("/api/current-user")
+def get_current_user(request: Request):
+    """Gibt die aktuelle User-Session zurück"""
+    user_session = request.session.get("user")
+    if not user_session:
+        raise HTTPException(status_code=401, detail="Nicht eingeloggt")
+    
+    return {
+        "id": user_session["id"],
+        "username": user_session["username"], 
+        "role": user_session["role"],
+        "authenticated": True
+    }

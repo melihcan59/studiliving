@@ -4,19 +4,15 @@
   <meta charset="UTF-8">
   <title>Benutzerübersicht - Admin Dashboard</title>
   <link rel="stylesheet" href="/static/style.css?v=1">
+  <link rel="stylesheet" href="/static/css/header-styles.css">
+
 </head>
 <body>
-  <header class="header">
-    <div class="container nav">
-      <div class="logo">🏠 Admin Dashboard</div>
-      <ul class="nav-menu">
-        <li><a href="/static/index.html" class="nav-link">🏠 Start</a></li>
-        <li><a href="/static/profil.html" class="nav-link">👤 Profil</a></li>
-        <li><a href="/static/admin_users.html" class="nav-link active">👥 Alle Nutzer</a></li>
-        <li><a href="/logout" class="nav-link" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;">🚪 Logout</a></li>
-      </ul>
-    </div>
-  </header>
+
+  <div id="dynamic-header">
+   <!-- Header wird hier automatisch geladen -->
+  </div>
+
 
   <main class="container admin-container">
     <!-- Page Header -->
@@ -138,6 +134,8 @@
       </div>
     </div>
   </main>
+
+  <script src="/static/js/header.js"></script>
 
   <script>
     // Global variables

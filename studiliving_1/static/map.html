@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/static/style.css?v=1">
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link rel="stylesheet" href="/static/css/header-styles.css">
   <style>
     #map {
       height: 75vh;
@@ -163,28 +164,9 @@
 </head>
 <body>
 
- <!-- ===== MODERNIZED HEADER ===== -->
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
-        
-        <ul class="nav-menu" id="navMenu">
-          <li><a href="/static/index.html" class="nav-link">Start</a></li>
-          <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
-          <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
-          <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
-          <li><a href="/static/map.html" class="nav-link active">Karte</a></li>
-          <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
-        </ul>
-
-        <!-- Mobile Menu Toggle -->
-        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Menü öffnen">
-          ☰
-        </button>
-      </nav>
-    </div>
-  </header>
+  <div id="dynamic-header">
+    <!-- Header wird hier automatisch geladen -->
+  </div>
 
   <!-- ===== MAP SECTION ===== -->
   <main class="container content-section">
@@ -265,6 +247,9 @@
   </main>
 
   <!-- ===== SCRIPTS ===== -->
+  <script src="/static/js/header.js"></script>
+
+
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     // Globale Variablen
@@ -277,17 +262,6 @@
       city: ''
     };
 
-    // Initialization
-    document.addEventListener('DOMContentLoaded', function() {
-      // Navigation Active State Management - FIX HINZUGEFÜGT
-      document.querySelectorAll('.nav-link').forEach(link => {
-        link.classList.remove('active');
-      });
-      document.querySelector('a[href="/static/map.html"]').classList.add('active');
-
-      initializeEventListeners();
-      loadProperties();
-    });
 
     // Event Listeners
     function initializeEventListeners() {
@@ -484,6 +458,18 @@
 
     function centerMapOnGermany() {
       map.setView([51.1657, 10.4515], 6);
+    }
+
+    // Initialization
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeEventListeners();
+      loadProperties(); // ← Das fehlte!
+    });
+
+    
+    const mapLink = document.querySelector('a[href="/static/map.html"]');
+      if (mapLink) {
+      mapLink.classList.add('active');
     }
   </script>
 

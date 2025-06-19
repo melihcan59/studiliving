@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Aktualisiert - ImmoPlattform</title>
   <link rel="stylesheet" href="/static/style.css?v=1">
+  <link rel="stylesheet" href="/static/css/header-styles.css">
   <style>
     /* Status Page Styling */
     .status-container {
@@ -276,12 +277,10 @@
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
-  <header class="header">
-    <div class="container nav">
-      <a href="/static/index.html" class="logo">ImmoPlattform</a>
-    </div>
-  </header>
+  <div id="dynamic-header">
+    <!-- Header wird hier automatisch geladen -->
+  </div>
+
 
   <!-- ===== UPDATE SUCCESS MESSAGE ===== -->
   <main class="status-container">
@@ -326,6 +325,7 @@
     </div>
   </main>
 
+    <script src="/static/js/header.js"></script>
   <script>
     // Aktuelle Zeit setzen
     document.addEventListener('DOMContentLoaded', function() {

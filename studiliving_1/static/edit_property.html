@@ -5,32 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Immobilie bearbeiten – ImmoPlattform</title>
   <link rel="stylesheet" href="/static/style.css?v=2">
+  <link rel="stylesheet" href="/static/css/header-styles.css">
   <!-- Autor: Dennis | Modernisierte Edit Property Page -->
 </head>
 <body>
 
-  <!-- ===== MODERNIZED HEADER ===== -->
-  <header class="header">
-    <div class="container">
-      <nav class="nav">
-        <a href="/static/index.html" class="logo">🏠 ImmoPlattform</a>
-        
-        <ul class="nav-menu" id="navMenu">
-          <li><a href="/static/index.html" class="nav-link">Start</a></li>
-          <li><a href="/static/profil.html" class="nav-link">Profil</a></li>
-          <li><a href="/static/my_properties.html" class="nav-link">Meine Immobilien</a></li>
-          <li><a href="/static/create_property.html" class="nav-link">Neue Immobilie</a></li>
-          <li><a href="/static/map.html" class="nav-link">Karte</a></li>
-          <li><a href="/logout" onclick="fetch('/logout').then(() => location.href='/static/login.html'); return false;" class="nav-link">Logout</a></li>
-        </ul>
-
-        <!-- Mobile Menu Toggle -->
-        <button class="mobile-menu-toggle" id="mobileToggle" aria-label="Menü öffnen">
-          ☰
-        </button>
-      </nav>
-    </div>
-  </header>
+  <div id="dynamic-header">
+    <!-- Header wird hier automatisch geladen -->
+  </div>
 
   <!-- ===== MAIN CONTENT ===== -->
   <main class="content-section">
@@ -379,6 +361,7 @@
   </main>
 
   <!-- ===== ENHANCED JAVASCRIPT ===== -->
+  <script src="/static/js/header.js"></script>
   <script>
     // ===== GLOBAL VARIABLES =====
     // Autor: Dennis | Property Edit Enhancement
